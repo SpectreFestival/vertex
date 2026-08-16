@@ -1,26 +1,30 @@
-// MIT License
-//
-// Copyright (c) 2026 SpectreFestival
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
 /**
+ * +-------------------------------------------------------------------------------+
+ * | MIT License                                                                   |
+ * +-------------------------------------------------------------------------------+
+ * |                                                                               |
+ * | Copyright (c) 2026 SpectreFestival                                            |
+ * |                                                                               |
+ * | Permission is hereby granted, free of charge, to any person obtaining a copy  |
+ * | of this software and associated documentation files (the "Software"), to deal |
+ * | in the Software without restriction, including without limitation the rights  |
+ * | to use, copy, modify, merge, publish, distribute, sublicense, and/or sell     |
+ * | copies of the Software, and to permit persons to whom the Software is         |
+ * | furnished to do so, subject to the following conditions:                      |
+ * |                                                                               |
+ * | The above copyright notice and this permission notice shall be included in    |
+ * | all copies or substantial portions of the Software.                           |
+ * +-------------------------------------------------------------------------------+
+ * |                                                                               |
+ * | THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR    |
+ * | IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,      |
+ * | FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE   |
+ * | AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER        |
+ * | LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, |
+ * | OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE |
+ * | SOFTWARE.                                                                     |
+ * +-------------------------------------------------------------------------------+
+ *
  * @file      vtxvecx.hpp
  * @author    SpectreFestival
  * @license   MIT
@@ -37,18 +41,18 @@
  * - Compound assignment operators (+=, -=, *=, /=)
  * - Comparison operators (==, !=, <, <=, >, >=) returning vector_template<bool, N>
  * - Logical operators (&&, ||) for per-element boolean operations
- * - dot() - dot product
- * - cross() - 2D scalar cross / 3D vector cross
- * - length() - Euclidean norm
- * - normalize() - unit vector
- * - distance() - Euclidean distance
- * - angle() - angle between two vectors
- * - rotate() - 2D/3D/4D rotation
- * - reflect() - reflection vector
- * - refract() - refraction vector
+ * - dot()          - dot product
+ * - cross()        - 2D scalar cross / 3D vector cross
+ * - length()       - Euclidean norm
+ * - normalize()    - unit vector
+ * - distance()     - Euclidean distance
+ * - angle()        - angle between two vectors
+ * - rotate()       - 2D/3D/4D rotation
+ * - reflect()      - reflection vector
+ * - refract()      - refraction vector
  * - face_forward() - orientation correction
- * - fma() - fused multiply-add
- * - vector_cast() - type conversion and construction
+ * - fma()          - fused multiply-add
+ * - vector_cast()  - type conversion and construction
  *
  * @note  All operations are compile-time unrolled via index_sequence
  *        and expanded using fold expressions (C++17).
@@ -64,11 +68,15 @@
 #include <utility>          ///< std::index_sequence, std::make_index_sequence, std::forward
 #include "vtxbasic.hpp"     ///< arithmetic_t, VERTEX_CONSTEXPR, vtx type aliases
 
+/**
+ * @namespace   vtx
+ * @brief       Root namespace for Vertex library.
+ */
 namespace vtx {
     /**
      * @brief   N-dimensional vector template.
-     * @tparam  Ty  Arithmetic type (integral or floating-point).
-     * @tparam  N   Number of dimensions.
+     * @tparam  Ty Arithmetic type (integral or floating-point).
+     * @tparam  N Number of dimensions.
      *
      * @details
      * Provides random-access container semantics with compile-time fixed size.
@@ -95,128 +103,124 @@ namespace vtx {
         using const_reverse_iterator    = std::reverse_iterator<const_iterator>;
 
         /**
-         * @brief Default constructor - zero-initializes all elements.
+         * @brief   Default constructor - zero-initializes all elements.
          */
         constexpr vector_template( ) noexcept = default;
 
         /**
-         * @brief Returns an iterator to the first element.
-         * @return Iterator to the beginning of the vector.
+         * @brief   Returns an iterator to the first element.
+         * @return  Iterator to the beginning of the vector.
          */
-        [[nodiscard]] constexpr iterator begin() noexcept {
+        [[nodiscard]] constexpr iterator begin( ) noexcept {
             return data;
         }
 
         /**
-         * @brief Returns an iterator to the element following the last element.
-         * @return Iterator to the end of the vector.
+         * @brief   Returns an iterator to the element following the last element.
+         * @return  Iterator to the end of the vector.
          */
-        [[nodiscard]] constexpr iterator end() noexcept {
+        [[nodiscard]] constexpr iterator end( ) noexcept {
             return data + N;
         }
 
         /**
-         * @brief Returns a const iterator to the first element.
-         * @return Const iterator to the beginning of the vector.
+         * @brief   Returns a const iterator to the first element.
+         * @return  Const iterator to the beginning of the vector.
          */
-        [[nodiscard]] constexpr const_iterator begin() const noexcept {
+        [[nodiscard]] constexpr const_iterator begin( ) const noexcept {
             return data;
         }
 
         /**
-         * @brief Returns a const iterator to the element following the last element.
-         * @return Const iterator to the end of the vector.
+         * @brief   Returns a const iterator to the element following the last element.
+         * @return  Const iterator to the end of the vector.
          */
-        [[nodiscard]] constexpr const_iterator end() const noexcept {
+        [[nodiscard]] constexpr const_iterator end( ) const noexcept {
             return data + N;
         }
 
         /**
-         * @brief Returns a const iterator to the first element.
-         * @return Const iterator to the beginning of the vector.
+         * @brief   Returns a const iterator to the first element.
+         * @return  Const iterator to the beginning of the vector.
          */
-        [[nodiscard]] constexpr const_iterator cbegin() const noexcept {
+        [[nodiscard]] constexpr const_iterator cbegin( ) const noexcept {
             return data;
         }
 
         /**
-         * @brief Returns a const iterator to the element following the last element.
-         * @return Const iterator to the end of the vector.
+         * @brief   Returns a const iterator to the element following the last element.
+         * @return  Const iterator to the end of the vector.
          */
-        [[nodiscard]] constexpr const_iterator cend() const noexcept {
+        [[nodiscard]] constexpr const_iterator cend( ) const noexcept {
             return data + N;
         }
 
         /**
-         * @brief Returns a reverse iterator to the first element of the reversed vector.
-         * @return Reverse iterator to the beginning of the reversed vector.
+         * @brief   Returns a reverse iterator to the first element of the reversed vector.
+         * @return  Reverse iterator to the beginning of the reversed vector.
          */
-        [[nodiscard]] constexpr reverse_iterator rbegin() noexcept {
-            return std::reverse_iterator(end());
+        [[nodiscard]] constexpr reverse_iterator rbegin( ) noexcept {
+            return std::reverse_iterator( end( ) );
         }
 
         /**
-         * @brief Returns a reverse iterator to the element following the last element of the reversed vector.
-         * @return Reverse iterator to the end of the reversed vector.
+         * @brief   Returns a reverse iterator to the element following the last element of the reversed vector.
+         * @return  Reverse iterator to the end of the reversed vector.
          */
-        [[nodiscard]] constexpr reverse_iterator rend() noexcept {
-            return std::reverse_iterator(begin());
+        [[nodiscard]] constexpr reverse_iterator rend( ) noexcept {
+            return std::reverse_iterator( begin( ) );
         }
 
         /**
-         * @brief Returns a const reverse iterator to the first element of the reversed vector.
-         * @return Const reverse iterator to the beginning of the reversed vector.
+         * @brief   Returns a const reverse iterator to the first element of the reversed vector.
+         * @return  Const reverse iterator to the beginning of the reversed vector.
          */
-        [[nodiscard]] constexpr const_reverse_iterator rbegin() const noexcept {
-            return std::reverse_iterator(end());
+        [[nodiscard]] constexpr const_reverse_iterator rbegin( ) const noexcept {
+            return std::reverse_iterator( end( ) );
         }
 
         /**
-         * @brief Returns a const reverse iterator to the element following the last element of the reversed vector.
-         * @return Const reverse iterator to the end of the reversed vector.
+         * @brief   Returns a const reverse iterator to the element following the last element of the reversed vector.
+         * @return  Const reverse iterator to the end of the reversed vector.
          */
-        [[nodiscard]] constexpr const_reverse_iterator rend() const noexcept {
-            return std::reverse_iterator(begin());
+        [[nodiscard]] constexpr const_reverse_iterator rend( ) const noexcept {
+            return std::reverse_iterator( begin( ) );
         }
 
         /**
-         * @brief Returns a const reverse iterator to the first element of the reversed vector.
-         * @return Const reverse iterator to the beginning of the reversed vector.
+         * @brief   Returns a const reverse iterator to the first element of the reversed vector.
+         * @return  Const reverse iterator to the beginning of the reversed vector.
          */
-        [[nodiscard]] constexpr const_reverse_iterator crbegin() const noexcept {
-            return std::reverse_iterator(cend());
+        [[nodiscard]] constexpr const_reverse_iterator crbegin( ) const noexcept {
+            return std::reverse_iterator( cend( ) );
         }
 
         /**
-         * @brief Returns a const reverse iterator to the element following the last element of the reversed vector.
-         * @return Const reverse iterator to the end of the reversed vector.
+         * @brief   Returns a const reverse iterator to the element following the last element of the reversed vector.
+         * @return  Const reverse iterator to the end of the reversed vector.
          */
-        [[nodiscard]] constexpr const_reverse_iterator crend() const noexcept {
-            return std::reverse_iterator(cbegin());
+        [[nodiscard]] constexpr const_reverse_iterator crend( ) const noexcept {
+            return std::reverse_iterator( cbegin( ) );
         }
 
         /**
-         * @brief Constructs vector from variadic arguments.
-         * @tparam Args Variadic argument types.
-         * @param args Element values.
+         * @brief   Constructs vector from variadic arguments.
+         * @tparam  Args Variadic argument types.
+         * @param   args Element values.
          *
          * @details
          * Example:
          * @code
-         * vector_template<float, 3> v{1.0f, 2.0f, 3.0f};
+         * vector_template<float, 3> v(1.0f, 2.0f, 3.0f);
          * @endcode
          */
         template <typename... Args>
-        explicit constexpr vector_template( Args&&... args ) noexcept {
-            const Ty vals [ N ] = { static_cast<Ty>( args )... };
-            [ & ]<size_t... I>( std::index_sequence<I...> ) {
-                ( ( data [ I ] = vals [ I ] ), ... );
-            }( std::make_index_sequence<N>( ) );
-        }
+        explicit constexpr vector_template( Args&&... args ) noexcept
+        : data{ static_cast<Ty>( args )... }{}
 
         /**
-         * @brief Constructs vector from an initializer list.
-         * @param vec Initializer list of element values.
+         * @brief   Constructs vector from an initializer list.
+         * @param   vec Initializer list of element values.
          *
          * @details
          * Example:
@@ -224,34 +228,34 @@ namespace vtx {
          * vector_template<float, 3> v{ {1.0f, 2.0f, 3.0f} };
          * @endcode
          */
-        explicit constexpr vector_template( const std::initializer_list<Ty>& vec ) noexcept {
+        constexpr vector_template( const std::initializer_list<Ty>& vec ) noexcept {
             [ & ]<size_t... I>( std::index_sequence<I...> ) {
                 ( ( data [ I ] = vec.begin( ) [ I ] ) , ... );
             }( std::make_index_sequence<N>( ) );
         }
 
         /**
-         * @brief Accesses element at specified index (unchecked).
-         * @param idx Index of the element.
-         * @return Reference to the element.
+         * @brief   Accesses element at specified index (unchecked).
+         * @param   idx Index of the element.
+         * @return  Reference to the element.
          */
         [[nodiscard]] constexpr Ty& operator[]( const std::size_t idx ) noexcept {
             return data [ idx ];
         }
 
         /**
-         * @brief Accesses element at specified index (unchecked, const).
-         * @param idx Index of the element.
-         * @return Const reference to the element.
+         * @brief   Accesses element at specified index (unchecked, const).
+         * @param   idx Index of the element.
+         * @return  Const reference to the element.
          */
         [[nodiscard]] constexpr const Ty& operator[]( const std::size_t idx ) const noexcept {
             return data [ idx ];
         }
 
         /**
-         * @brief Converts vector to another arithmetic type.
-         * @tparam U Target arithmetic type.
-         * @return vector_template<U, N> with each element casted to type U.
+         * @brief   Converts vector to another arithmetic type.
+         * @tparam  U Target arithmetic type.
+         * @return  vector_template<U, N> with each element casted to type U.
          *
          * @details
          * Example:
@@ -271,14 +275,14 @@ namespace vtx {
     };
 
     /**
-     * @brief Unary plus operator.
-     * @param vec Input vector.
-     * @return Copy of the vector (element-wise unary plus).
+     * @brief   Unary plus operator.
+     * @param   vec Input vector.
+     * @return  Copy of the vector (element-wise unary plus).
      */
     template <arithmetic_t Ty , std::size_t N>
     [[nodiscard]] constexpr auto operator+( const vector_template<Ty , N>& vec ) noexcept {
         return [ & ]<std::size_t... I>( std::index_sequence<I...> ) {
-            return vector_template<Ty , N>( +vec.data [ I ]... );
+            return vector_template<Ty , N>( + vec.data [ I ]... );
         }( std::make_index_sequence<N>( ) );
     }
 
@@ -290,7 +294,7 @@ namespace vtx {
     template <arithmetic_t Ty, std::size_t N>
     [[nodiscard]] constexpr auto operator-( const vector_template<Ty , N>& vec ) noexcept {
         return [ & ]<std::size_t... I>( std::index_sequence<I...> ) {
-            return vector_template<Ty , N>( -vec.data [ I ]... );
+            return vector_template<Ty , N>( - vec.data [ I ]... );
         }( std::make_index_sequence<N>( ) );
     }
 
@@ -531,7 +535,7 @@ namespace vtx {
      * @return  vector_template<bool, N> with each element computed as vec1[i] > vec2[i].
      */
     template <arithmetic_t Ty , std::size_t N>
-    [[nodiscard]] constexpr vector_template<bool , N> operator> ( const vector_template<Ty , N>& vec1 , const vector_template<Ty , N>& vec2 ) noexcept {
+    [[nodiscard]] constexpr vector_template<bool , N> operator>( const vector_template<Ty , N>& vec1 , const vector_template<Ty , N>& vec2 ) noexcept {
         return [ & ]<std::size_t... I>( std::index_sequence<I...> ) {
             return vector_template<bool , N>( ( vec1.data [ I ] > vec2.data [ I ] )... );
         }( std::make_index_sequence<N>( ) );
@@ -544,7 +548,7 @@ namespace vtx {
      * @return  vector_template<bool, N> with each element computed as vec1[i] < vec2[i].
      */
     template <arithmetic_t Ty , std::size_t N>
-    [[nodiscard]] constexpr vector_template<bool , N> operator< ( const vector_template<Ty , N>& vec1 , const vector_template<Ty , N>& vec2 ) noexcept {
+    [[nodiscard]] constexpr vector_template<bool , N> operator<( const vector_template<Ty , N>& vec1 , const vector_template<Ty , N>& vec2 ) noexcept {
         return [ & ]<std::size_t... I>( std::index_sequence<I...> ) {
             return vector_template<bool , N>( ( vec1.data [ I ] < vec2.data [ I ] )... );
         }( std::make_index_sequence<N>( ) );
@@ -910,7 +914,7 @@ namespace vtx {
     template <arithmetic_t Ty , std::size_t N>
     [[nodiscard]] VERTEX_CONSTEXPR auto vector_cast( const Ty& scale ) noexcept {
         return [ & ]<std::size_t... I>( std::index_sequence<I...> ) {
-            return vector_template<Ty, N>{ ( ( void )I , scale )... };
+            return vector_template<Ty, N>( ( ( void )I , scale )... );
         }( std::make_index_sequence<N>( ) );
     }
 
@@ -930,8 +934,8 @@ namespace vtx {
      *       All arguments are forwarded and cast to Ty via the vector_template constructor.
      */
     template <arithmetic_t Ty>
-    [[nodiscard]] VERTEX_CONSTEXPR auto vector_cast(auto&&... args) noexcept {
-        return vector_template<Ty, sizeof...(args)>( std::forward<decltype(args)>(args)... );
+    [[nodiscard]] VERTEX_CONSTEXPR auto vector_cast( auto&&... args ) noexcept {
+        return vector_template<Ty, sizeof...( args )>( std::forward<decltype( args )>( args )... );
     }
 }
 

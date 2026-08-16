@@ -1,26 +1,30 @@
-// MIT License
-//
-// Copyright (c) 2026 SpectreFestival
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
 /**
+ * +-------------------------------------------------------------------------------+
+ * | MIT License                                                                   |
+ * +-------------------------------------------------------------------------------+
+ * |                                                                               |
+ * | Copyright (c) 2026 SpectreFestival                                            |
+ * |                                                                               |
+ * | Permission is hereby granted, free of charge, to any person obtaining a copy  |
+ * | of this software and associated documentation files (the "Software"), to deal |
+ * | in the Software without restriction, including without limitation the rights  |
+ * | to use, copy, modify, merge, publish, distribute, sublicense, and/or sell     |
+ * | copies of the Software, and to permit persons to whom the Software is         |
+ * | furnished to do so, subject to the following conditions:                      |
+ * |                                                                               |
+ * | The above copyright notice and this permission notice shall be included in    |
+ * | all copies or substantial portions of the Software.                           |
+ * +-------------------------------------------------------------------------------+
+ * |                                                                               |
+ * | THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR    |
+ * | IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,      |
+ * | FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE   |
+ * | AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER        |
+ * | LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, |
+ * | OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE |
+ * | SOFTWARE.                                                                     |
+ * +-------------------------------------------------------------------------------+
+ *
  * @file      vtxmatcxr.hpp
  * @author    SpectreFestival
  * @license   MIT
@@ -40,15 +44,15 @@
  * - Matrix-vector multiplication: (R×C) * (C) → (R)
  * - Vector-matrix multiplication: (R) * (R×C) → (C)
  * - Comparison operators returning matrix_template<bool, R, C>
- * - row() / col() - extract row/column vectors
- * - transpose() - matrix transposition
- * - trace() - matrix trace (square matrices only)
- * - determinant() - 2x2, 3x3, 4x4 determinants
- * - inverse() - 2x2, 3x3, 4x4 matrix inversion
- * - inverse_transpose() - inverse-transpose (for normal transformation)
- * - hadamard() - element-wise product
- * - outer_product() - vector outer product
- * - translate() / rotate() / scale() - 4x4 affine transformations
+ * - row() / col()          - extract row/column vectors
+ * - transpose()            - matrix transposition
+ * - trace()                - matrix trace (square matrices only)
+ * - determinant()          - 2x2, 3x3, 4x4 determinants
+ * - inverse()              - 2x2, 3x3, 4x4 matrix inversion
+ * - inverse_transpose()    - inverse-transpose (for normal transformation)
+ * - hadamard()             - element-wise product
+ * - outer_product()        - vector outer product
+ * - translate() / rotate() / scale()    - 4x4 affine transformations
  * - look_at() / perspective() / ortho() - 4x4 view/projection matrices
  *
  * @note  All operations are compile-time unrolled via index_sequence
@@ -68,9 +72,9 @@
 namespace vtx {
     /**
      * @brief   R x C dimensional matrix template.
-     * @tparam  Ty  Arithmetic type (integral or floating-point).
-     * @tparam  R   Number of rows.
-     * @tparam  C   Number of columns.
+     * @tparam  Ty Arithmetic type (integral or floating-point).
+     * @tparam  R Number of rows.
+     * @tparam  C Number of columns.
      *
      * @details
      * Provides random-access container semantics with compile-time fixed size.
@@ -83,10 +87,10 @@ namespace vtx {
      * @code
      * using mat4x4f = matrix_template<float, 4, 4>;
      * mat4x4f m{
-     *     1.0f, 2.0f, 3.0f, 4.0f,
-     *     5.0f, 6.0f, 7.0f, 8.0f,
-     *     9.0f,10.0f,11.0f,12.0f,
-     *    13.0f,14.0f,15.0f,16.0f
+     *     1.0f,  2.0f,  3.0f,  4.0f,
+     *     5.0f,  6.0f,  7.0f,  8.0f,
+     *     9.0f, 10.0f, 11.0f, 12.0f,
+     *    13.0f, 14.0f, 15.0f, 16.0f
      * };
      * auto col0 = col(m, 0);
      * auto row0 = row(m, 0);
@@ -95,7 +99,7 @@ namespace vtx {
      * @endcode
      */
     template <arithmetic_t Ty , std::size_t R , std::size_t C>
-    struct matrix_template {
+    struct alignas( vertex_alignment<Ty> ) matrix_template {
         using iterator_category         = std::random_access_iterator_tag;
         using value_type                = Ty;
         using difference_type           = std::ptrdiff_t;
@@ -107,7 +111,7 @@ namespace vtx {
         using const_reverse_iterator    = std::reverse_iterator<const_iterator>;
 
         /**
-         * @brief Default constructor - zero-initializes all elements.
+         * @brief   Default constructor - zero-initializes all elements.
          */
         constexpr matrix_template( ) noexcept = default;
 
@@ -115,96 +119,96 @@ namespace vtx {
          * @brief   Returns an iterator to the first element.
          * @return  Iterator to the beginning of the matrix.
          */
-        [[nodiscard]] constexpr iterator begin() noexcept {
-            return std::addressof(data[0][0]);
+        [[nodiscard]] constexpr iterator begin( ) noexcept {
+            return std::addressof( data[ 0 ][ 0 ] );
         }
 
         /**
          * @brief   Returns an iterator to the element following the last element.
          * @return  Iterator to the end of the matrix.
          */
-        [[nodiscard]] constexpr iterator end() noexcept {
-            return std::addressof(data[0][0]) + (R * C);
+        [[nodiscard]] constexpr iterator end( ) noexcept {
+            return std::addressof( data[ 0 ][ 0 ] ) + ( R * C );
         }
 
         /**
          * @brief   Returns a const iterator to the first element.
          * @return  Const iterator to the beginning of the matrix.
          */
-        [[nodiscard]] constexpr const_iterator begin() const noexcept {
-            return std::addressof(data[0][0]);
+        [[nodiscard]] constexpr const_iterator begin( ) const noexcept {
+            return std::addressof( data[ 0 ][ 0 ] );
         }
 
         /**
          * @brief   Returns a const iterator to the element following the last element.
          * @return  Const iterator to the end of the matrix.
          */
-        [[nodiscard]] constexpr const_iterator end() const noexcept {
-            return std::addressof(data[0][0]) + (R * C);
+        [[nodiscard]] constexpr const_iterator end( ) const noexcept {
+            return std::addressof( data[ 0 ][ 0 ] ) + ( R * C );
         }
 
         /**
          * @brief   Returns a const iterator to the first element.
          * @return  Const iterator to the beginning of the matrix.
          */
-        [[nodiscard]] constexpr const_iterator cbegin() const noexcept {
-            return std::addressof(data[0][0]);
+        [[nodiscard]] constexpr const_iterator cbegin( ) const noexcept {
+            return std::addressof( data[ 0 ][ 0 ] );
         }
 
         /**
          * @brief   Returns a const iterator to the element following the last element.
          * @return  Const iterator to the end of the matrix.
          */
-        [[nodiscard]] constexpr const_iterator cend() const noexcept {
-            return std::addressof(data[0][0]) + (R * C);
+        [[nodiscard]] constexpr const_iterator cend( ) const noexcept {
+            return std::addressof( data[ 0 ][ 0 ] ) + ( R * C );
         }
 
         /**
          * @brief   Returns a reverse iterator to the first element of the reversed matrix.
          * @return  Reverse iterator to the beginning of the reversed matrix.
          */
-        [[nodiscard]] constexpr reverse_iterator rbegin() noexcept {
-            return std::reverse_iterator(end());
+        [[nodiscard]] constexpr reverse_iterator rbegin( ) noexcept {
+            return std::reverse_iterator( end( ) );
         }
 
         /**
          * @brief   Returns a reverse iterator to the element following the last element of the reversed matrix.
          * @return  Reverse iterator to the end of the reversed matrix.
          */
-        [[nodiscard]] constexpr reverse_iterator rend() noexcept {
-            return std::reverse_iterator(begin());
+        [[nodiscard]] constexpr reverse_iterator rend( ) noexcept {
+            return std::reverse_iterator( begin( ) );
         }
 
         /**
          * @brief   Returns a const reverse iterator to the first element of the reversed matrix.
          * @return  Const reverse iterator to the beginning of the reversed matrix.
          */
-        [[nodiscard]] constexpr const_reverse_iterator rbegin() const noexcept {
-            return std::reverse_iterator(end());
+        [[nodiscard]] constexpr const_reverse_iterator rbegin( ) const noexcept {
+            return std::reverse_iterator( end( ) );
         }
 
         /**
          * @brief   Returns a const reverse iterator to the element following the last element of the reversed matrix.
          * @return  Const reverse iterator to the end of the reversed matrix.
          */
-        [[nodiscard]] constexpr const_reverse_iterator rend() const noexcept {
-            return std::reverse_iterator(begin());
+        [[nodiscard]] constexpr const_reverse_iterator rend( ) const noexcept {
+            return std::reverse_iterator( begin( ) );
         }
 
         /**
          * @brief   Returns a const reverse iterator to the first element of the reversed matrix.
          * @return  Const reverse iterator to the beginning of the reversed matrix.
          */
-        [[nodiscard]] constexpr const_reverse_iterator crbegin() const noexcept {
-            return std::reverse_iterator(cend());
+        [[nodiscard]] constexpr const_reverse_iterator crbegin( ) const noexcept {
+            return std::reverse_iterator( cend( ) );
         }
 
         /**
          * @brief   Returns a const reverse iterator to the element following the last element of the reversed matrix.
          * @return  Const reverse iterator to the end of the reversed matrix.
          */
-        [[nodiscard]] constexpr const_reverse_iterator crend() const noexcept {
-            return std::reverse_iterator(cbegin());
+        [[nodiscard]] constexpr const_reverse_iterator crend( ) const noexcept {
+            return std::reverse_iterator( cbegin( ) );
         }
 
         /**
@@ -239,7 +243,7 @@ namespace vtx {
          * // data[0][0]=1, data[1][0]=2, data[0][1]=3, data[1][1]=4
          * @endcode
          */
-        explicit constexpr matrix_template( const std::initializer_list<Ty>& mat ) noexcept {
+        constexpr matrix_template( const std::initializer_list<Ty>& mat ) noexcept {
             [ & ]<std::size_t... I>( std::index_sequence<I...> ) {
                 ( ( data [ I / R ][ I % R ] = mat.begin( ) [ ( I % R ) * C + ( I / R ) ] ) , ... );
             }( std::make_index_sequence<R * C>( ) );
@@ -250,12 +254,11 @@ namespace vtx {
          * @param   r Row index.
          * @param   c Column index.
          * @return  Reference to the element at data[c][r].
-         *
          * @details
          * Maps to column-major storage: returns data[c][r].
          */
-        constexpr Ty& operator()(std::size_t r, std::size_t c) noexcept {
-            return data[c][r];
+        constexpr Ty& operator( )( const std::size_t r, const std::size_t c ) noexcept {
+            return data[ c ][ r ];
         }
 
         /**
@@ -264,8 +267,8 @@ namespace vtx {
          * @param   c Column index.
          * @return  Const reference to the element at data[c][r].
          */
-        constexpr const Ty& operator()(std::size_t r, std::size_t c) const noexcept {
-            return data[c][r];
+        constexpr const Ty& operator( )( const std::size_t r, const std::size_t c ) const noexcept {
+            return data[ c ][ r ];
         }
 
         /**
@@ -298,7 +301,7 @@ namespace vtx {
     template <arithmetic_t Ty , std::size_t R , std::size_t C>
     [[nodiscard]] constexpr auto operator+( const matrix_template<Ty , R , C>& mat ) noexcept {
         return [ & ]<std::size_t... I>( std::index_sequence<I...> ) {
-            return matrix_template<Ty , R , C>( ( +mat.data [ I % C ][ I / C ] )... );
+            return matrix_template<Ty , R , C>( ( + mat.data [ I % C ][ I / C ] )... );
         }( std::make_index_sequence<R * C>( ) );
     }
 
@@ -310,7 +313,7 @@ namespace vtx {
     template <arithmetic_t Ty , std::size_t R , std::size_t C>
     [[nodiscard]] constexpr auto operator-( const matrix_template<Ty , R , C>& mat ) noexcept {
         return [ & ]<std::size_t... I>( std::index_sequence<I...> ) {
-            return matrix_template<Ty , R , C>( ( -mat.data [ I % C ][ I / C ] )... );
+            return matrix_template<Ty , R , C>( ( - mat.data [ I % C ][ I / C ] )... );
         }( std::make_index_sequence<R * C>( ) );
     }
 
@@ -371,7 +374,7 @@ namespace vtx {
                     return [ & ]<std::size_t... K>( std::index_sequence<K...> ) {
                         return ( ( mat1.data [ K ][ row ] * mat2.data [ col ][ K ] ) + ... );
                     }( std::make_index_sequence<M>( ) );
-                }( ) )... );
+            }( ) )... );
         }( std::make_index_sequence<L * R>( ) );
     }
 
@@ -733,7 +736,7 @@ namespace vtx {
     [[nodiscard]] constexpr auto transpose( const matrix_template<Ty , R , C>& mat ) noexcept {
         return [ & ]<std::size_t... I>( std::index_sequence<I...> ) {
             return matrix_template<Ty , C , R>( ( mat.data [ I / R ][ I % R ] )... );
-        }( std::make_index_sequence<C * R>{} );
+        }( std::make_index_sequence<C * R>( ) );
     }
 
     /**
@@ -927,23 +930,23 @@ namespace vtx {
      */
     template <arithmetic_t Ty>
     [[nodiscard]] constexpr auto inverse( const matrix_template<Ty , 3 , 3>& mat ) noexcept{
-        auto c00 =  ( mat.data [ 1 ][ 1 ] * mat.data [ 2 ][ 2 ] - mat.data [ 1 ][ 2 ] * mat.data [ 2 ][ 1 ] );
+        auto c00 = +( mat.data [ 1 ][ 1 ] * mat.data [ 2 ][ 2 ] - mat.data [ 1 ][ 2 ] * mat.data [ 2 ][ 1 ] );
         auto c01 = -( mat.data [ 1 ][ 0 ] * mat.data [ 2 ][ 2 ] - mat.data [ 1 ][ 2 ] * mat.data [ 2 ][ 0 ] );
-        auto c02 =  ( mat.data [ 1 ][ 0 ] * mat.data [ 2 ][ 1 ] - mat.data [ 1 ][ 1 ] * mat.data [ 2 ][ 0 ] );
+        auto c02 = +( mat.data [ 1 ][ 0 ] * mat.data [ 2 ][ 1 ] - mat.data [ 1 ][ 1 ] * mat.data [ 2 ][ 0 ] );
         auto c10 = -( mat.data [ 0 ][ 1 ] * mat.data [ 2 ][ 2 ] - mat.data [ 0 ][ 2 ] * mat.data [ 2 ][ 1 ] );
-        auto c11 =  ( mat.data [ 0 ][ 0 ] * mat.data [ 2 ][ 2 ] - mat.data [ 0 ][ 2 ] * mat.data [ 2 ][ 0 ] );
+        auto c11 = +( mat.data [ 0 ][ 0 ] * mat.data [ 2 ][ 2 ] - mat.data [ 0 ][ 2 ] * mat.data [ 2 ][ 0 ] );
         auto c12 = -( mat.data [ 0 ][ 0 ] * mat.data [ 2 ][ 1 ] - mat.data [ 0 ][ 1 ] * mat.data [ 2 ][ 0 ] );
-        auto c20 =  ( mat.data [ 0 ][ 1 ] * mat.data [ 1 ][ 2 ] - mat.data [ 0 ][ 2 ] * mat.data [ 1 ][ 1 ] );
+        auto c20 = +( mat.data [ 0 ][ 1 ] * mat.data [ 1 ][ 2 ] - mat.data [ 0 ][ 2 ] * mat.data [ 1 ][ 1 ] );
         auto c21 = -( mat.data [ 0 ][ 0 ] * mat.data [ 1 ][ 2 ] - mat.data [ 0 ][ 2 ] * mat.data [ 1 ][ 0 ] );
-        auto c22 =  ( mat.data [ 0 ][ 0 ] * mat.data [ 1 ][ 1 ] - mat.data [ 0 ][ 1 ] * mat.data [ 1 ][ 0 ] );
+        auto c22 = +( mat.data [ 0 ][ 0 ] * mat.data [ 1 ][ 1 ] - mat.data [ 0 ][ 1 ] * mat.data [ 1 ][ 0 ] );
 
         auto det = mat.data [ 0 ][ 0 ] * c00 +mat.data [ 0 ][ 1 ] * c01 +mat.data [ 0 ][ 2 ] * c02;
         auto inv = static_cast< Ty >( 1 ) / det;
 
         return matrix_template<Ty , 3 , 3>(
-            c00* inv , c10* inv , c20* inv ,
-            c01* inv , c11* inv , c21* inv ,
-            c02* inv , c12* inv , c22* inv
+            c00 * inv , c10 * inv , c20 * inv ,
+            c01 * inv , c11 * inv , c21 * inv ,
+            c02 * inv , c12 * inv , c22 * inv
         );
     }
 
@@ -969,47 +972,6 @@ namespace vtx {
      */
     template <arithmetic_t Ty>
     [[nodiscard]] constexpr auto inverse( const matrix_template<Ty , 4 , 4>& mat ) noexcept {
-        //auto c00 = mat.data [ 1 ][ 1 ] * mat.data [ 2 ][ 2 ] * mat.data [ 3 ][ 3 ] + mat.data [ 1 ][ 2 ] * mat.data [ 2 ][ 3 ] * mat.data [ 3 ][ 1 ] + mat.data [ 1 ][ 3 ] * mat.data [ 2 ][ 1 ] * mat.data [ 3 ][ 2 ]
-        //         - mat.data [ 1 ][ 1 ] * mat.data [ 2 ][ 3 ] * mat.data [ 3 ][ 2 ] - mat.data [ 1 ][ 2 ] * mat.data [ 2 ][ 1 ] * mat.data [ 3 ][ 3 ] - mat.data [ 1 ][ 3 ] * mat.data [ 2 ][ 2 ] * mat.data [ 3 ][ 1 ];
-        //auto c01 = mat.data [ 0 ][ 1 ] * mat.data [ 2 ][ 3 ] * mat.data [ 3 ][ 2 ] + mat.data [ 0 ][ 2 ] * mat.data [ 2 ][ 1 ] * mat.data [ 3 ][ 3 ] + mat.data [ 0 ][ 3 ] * mat.data [ 2 ][ 2 ] * mat.data [ 3 ][ 1 ]
-        //         - mat.data [ 0 ][ 1 ] * mat.data [ 2 ][ 2 ] * mat.data [ 3 ][ 3 ] - mat.data [ 0 ][ 2 ] * mat.data [ 2 ][ 3 ] * mat.data [ 3 ][ 1 ] - mat.data [ 0 ][ 3 ] * mat.data [ 2 ][ 1 ] * mat.data [ 3 ][ 2 ];
-        //auto c02 = mat.data [ 0 ][ 1 ] * mat.data [ 1 ][ 2 ] * mat.data [ 3 ][ 3 ] + mat.data [ 0 ][ 2 ] * mat.data [ 1 ][ 3 ] * mat.data [ 3 ][ 1 ] + mat.data [ 0 ][ 3 ] * mat.data [ 1 ][ 1 ] * mat.data [ 3 ][ 2 ]
-        //         - mat.data [ 0 ][ 1 ] * mat.data [ 1 ][ 3 ] * mat.data [ 3 ][ 2 ] - mat.data [ 0 ][ 2 ] * mat.data [ 1 ][ 1 ] * mat.data [ 3 ][ 3 ] - mat.data [ 0 ][ 3 ] * mat.data [ 1 ][ 2 ] * mat.data [ 3 ][ 1 ];
-        //auto c03 = mat.data [ 0 ][ 1 ] * mat.data [ 1 ][ 3 ] * mat.data [ 2 ][ 2 ] + mat.data [ 0 ][ 2 ] * mat.data [ 1 ][ 1 ] * mat.data [ 2 ][ 3 ] + mat.data [ 0 ][ 3 ] * mat.data [ 1 ][ 2 ] * mat.data [ 2 ][ 1 ]
-        //         - mat.data [ 0 ][ 1 ] * mat.data [ 1 ][ 2 ] * mat.data [ 2 ][ 3 ] - mat.data [ 0 ][ 2 ] * mat.data [ 1 ][ 3 ] * mat.data [ 2 ][ 1 ] - mat.data [ 0 ][ 3 ] * mat.data [ 1 ][ 1 ] * mat.data [ 2 ][ 2 ];
-        //auto c10 = mat.data [ 1 ][ 0 ] * mat.data [ 2 ][ 3 ] * mat.data [ 3 ][ 2 ] + mat.data [ 1 ][ 2 ] * mat.data [ 2 ][ 0 ] * mat.data [ 3 ][ 3 ] + mat.data [ 1 ][ 3 ] * mat.data [ 2 ][ 2 ] * mat.data [ 3 ][ 0 ]
-        //         - mat.data [ 1 ][ 0 ] * mat.data [ 2 ][ 2 ] * mat.data [ 3 ][ 3 ] - mat.data [ 1 ][ 2 ] * mat.data [ 2 ][ 3 ] * mat.data [ 3 ][ 0 ] - mat.data [ 1 ][ 3 ] * mat.data [ 2 ][ 0 ] * mat.data [ 3 ][ 2 ];
-        //auto c11 = mat.data [ 0 ][ 0 ] * mat.data [ 2 ][ 2 ] * mat.data [ 3 ][ 3 ] + mat.data [ 0 ][ 2 ] * mat.data [ 2 ][ 3 ] * mat.data [ 3 ][ 0 ] + mat.data [ 0 ][ 3 ] * mat.data [ 2 ][ 0 ] * mat.data [ 3 ][ 2 ]
-        //         - mat.data [ 0 ][ 0 ] * mat.data [ 2 ][ 3 ] * mat.data [ 3 ][ 2 ] - mat.data [ 0 ][ 2 ] * mat.data [ 2 ][ 0 ] * mat.data [ 3 ][ 3 ] - mat.data [ 0 ][ 3 ] * mat.data [ 2 ][ 2 ] * mat.data [ 3 ][ 0 ];
-        //auto c12 = mat.data [ 0 ][ 0 ] * mat.data [ 1 ][ 3 ] * mat.data [ 3 ][ 2 ] + mat.data [ 0 ][ 2 ] * mat.data [ 1 ][ 0 ] * mat.data [ 3 ][ 3 ] + mat.data [ 0 ][ 3 ] * mat.data [ 1 ][ 2 ] * mat.data [ 3 ][ 0 ]
-        //         - mat.data [ 0 ][ 0 ] * mat.data [ 1 ][ 2 ] * mat.data [ 3 ][ 3 ] - mat.data [ 0 ][ 2 ] * mat.data [ 1 ][ 3 ] * mat.data [ 3 ][ 0 ] - mat.data [ 0 ][ 3 ] * mat.data [ 1 ][ 0 ] * mat.data [ 3 ][ 2 ];
-        //auto c13 = mat.data [ 0 ][ 0 ] * mat.data [ 1 ][ 2 ] * mat.data [ 2 ][ 3 ] + mat.data [ 0 ][ 2 ] * mat.data [ 1 ][ 3 ] * mat.data [ 2 ][ 0 ] + mat.data [ 0 ][ 3 ] * mat.data [ 1 ][ 0 ] * mat.data [ 2 ][ 2 ]
-        //         - mat.data [ 0 ][ 0 ] * mat.data [ 1 ][ 3 ] * mat.data [ 2 ][ 2 ] - mat.data [ 0 ][ 2 ] * mat.data [ 1 ][ 0 ] * mat.data [ 2 ][ 3 ] - mat.data [ 0 ][ 3 ] * mat.data [ 1 ][ 2 ] * mat.data [ 2 ][ 0 ];
-        //auto c20 = mat.data [ 1 ][ 0 ] * mat.data [ 2 ][ 1 ] * mat.data [ 3 ][ 3 ] + mat.data [ 1 ][ 1 ] * mat.data [ 2 ][ 3 ] * mat.data [ 3 ][ 0 ] + mat.data [ 1 ][ 3 ] * mat.data [ 2 ][ 0 ] * mat.data [ 3 ][ 1 ]
-        //         - mat.data [ 1 ][ 0 ] * mat.data [ 2 ][ 3 ] * mat.data [ 3 ][ 1 ] - mat.data [ 1 ][ 1 ] * mat.data [ 2 ][ 0 ] * mat.data [ 3 ][ 3 ] - mat.data [ 1 ][ 3 ] * mat.data [ 2 ][ 1 ] * mat.data [ 3 ][ 0 ];
-        //auto c21 = mat.data [ 0 ][ 0 ] * mat.data [ 2 ][ 3 ] * mat.data [ 3 ][ 1 ] + mat.data [ 0 ][ 1 ] * mat.data [ 2 ][ 0 ] * mat.data [ 3 ][ 3 ] + mat.data [ 0 ][ 3 ] * mat.data [ 2 ][ 1 ] * mat.data [ 3 ][ 0 ]
-        //         - mat.data [ 0 ][ 0 ] * mat.data [ 2 ][ 1 ] * mat.data [ 3 ][ 3 ] - mat.data [ 0 ][ 1 ] * mat.data [ 2 ][ 3 ] * mat.data [ 3 ][ 0 ] - mat.data [ 0 ][ 3 ] * mat.data [ 2 ][ 0 ] * mat.data [ 3 ][ 1 ];
-        //auto c22 = mat.data [ 0 ][ 0 ] * mat.data [ 1 ][ 1 ] * mat.data [ 3 ][ 3 ] + mat.data [ 0 ][ 1 ] * mat.data [ 1 ][ 3 ] * mat.data [ 3 ][ 0 ] + mat.data [ 0 ][ 3 ] * mat.data [ 1 ][ 0 ] * mat.data [ 3 ][ 1 ]
-        //         - mat.data [ 0 ][ 0 ] * mat.data [ 1 ][ 3 ] * mat.data [ 3 ][ 1 ] - mat.data [ 0 ][ 1 ] * mat.data [ 1 ][ 0 ] * mat.data [ 3 ][ 3 ] - mat.data [ 0 ][ 3 ] * mat.data [ 1 ][ 1 ] * mat.data [ 3 ][ 0 ];
-        //auto c23 = mat.data [ 0 ][ 0 ] * mat.data [ 1 ][ 3 ] * mat.data [ 2 ][ 1 ] + mat.data [ 0 ][ 1 ] * mat.data [ 1 ][ 0 ] * mat.data [ 2 ][ 3 ] + mat.data [ 0 ][ 3 ] * mat.data [ 1 ][ 1 ] * mat.data [ 2 ][ 0 ]
-        //         - mat.data [ 0 ][ 0 ] * mat.data [ 1 ][ 1 ] * mat.data [ 2 ][ 3 ] - mat.data [ 0 ][ 1 ] * mat.data [ 1 ][ 3 ] * mat.data [ 2 ][ 0 ] - mat.data [ 0 ][ 3 ] * mat.data [ 1 ][ 0 ] * mat.data [ 2 ][ 1 ];
-        //auto c30 = mat.data [ 1 ][ 0 ] * mat.data [ 2 ][ 2 ] * mat.data [ 3 ][ 1 ] + mat.data [ 1 ][ 1 ] * mat.data [ 2 ][ 0 ] * mat.data [ 3 ][ 2 ] + mat.data [ 1 ][ 2 ] * mat.data [ 2 ][ 1 ] * mat.data [ 3 ][ 0 ]
-        //         - mat.data [ 1 ][ 0 ] * mat.data [ 2 ][ 1 ] * mat.data [ 3 ][ 2 ] - mat.data [ 1 ][ 1 ] * mat.data [ 2 ][ 2 ] * mat.data [ 3 ][ 0 ] - mat.data [ 1 ][ 2 ] * mat.data [ 2 ][ 0 ] * mat.data [ 3 ][ 1 ];
-        //auto c31 = mat.data [ 0 ][ 0 ] * mat.data [ 2 ][ 1 ] * mat.data [ 3 ][ 2 ] + mat.data [ 0 ][ 1 ] * mat.data [ 2 ][ 2 ] * mat.data [ 3 ][ 0 ] + mat.data [ 0 ][ 2 ] * mat.data [ 2 ][ 0 ] * mat.data [ 3 ][ 1 ]
-        //         - mat.data [ 0 ][ 0 ] * mat.data [ 2 ][ 2 ] * mat.data [ 3 ][ 1 ] - mat.data [ 0 ][ 1 ] * mat.data [ 2 ][ 0 ] * mat.data [ 3 ][ 2 ] - mat.data [ 0 ][ 2 ] * mat.data [ 2 ][ 1 ] * mat.data [ 3 ][ 0 ];
-        //auto c32 = mat.data [ 0 ][ 0 ] * mat.data [ 1 ][ 2 ] * mat.data [ 3 ][ 1 ] + mat.data [ 0 ][ 1 ] * mat.data [ 1 ][ 0 ] * mat.data [ 3 ][ 2 ] + mat.data [ 0 ][ 2 ] * mat.data [ 1 ][ 1 ] * mat.data [ 3 ][ 0 ]
-        //         - mat.data [ 0 ][ 0 ] * mat.data [ 1 ][ 1 ] * mat.data [ 3 ][ 2 ] - mat.data [ 0 ][ 1 ] * mat.data [ 1 ][ 2 ] * mat.data [ 3 ][ 0 ] - mat.data [ 0 ][ 2 ] * mat.data [ 1 ][ 0 ] * mat.data [ 3 ][ 1 ];
-        //auto c33 = mat.data [ 0 ][ 0 ] * mat.data [ 1 ][ 1 ] * mat.data [ 2 ][ 2 ] + mat.data [ 0 ][ 1 ] * mat.data [ 1 ][ 2 ] * mat.data [ 2 ][ 0 ] + mat.data [ 0 ][ 2 ] * mat.data [ 1 ][ 0 ] * mat.data [ 2 ][ 1 ]
-        //         - mat.data [ 0 ][ 0 ] * mat.data [ 1 ][ 2 ] * mat.data [ 2 ][ 1 ] - mat.data [ 0 ][ 1 ] * mat.data [ 1 ][ 0 ] * mat.data [ 2 ][ 2 ] - mat.data [ 0 ][ 2 ] * mat.data [ 1 ][ 1 ] * mat.data [ 2 ][ 0 ];
-        //auto det = mat.data [ 0 ][ 0 ] * c00 + mat.data [ 1 ][ 0 ] * c01 + mat.data [ 2 ][ 0 ] * c02 + mat.data [ 3 ][ 0 ] * c03;
-        //auto inv = Ty { 1 } / det;
-        //return matrix_template<Ty , 4 , 4>(
-        //    c00* inv , c10* inv , c20* inv , c30* inv ,
-        //    c01* inv , c11* inv , c21* inv , c31* inv ,
-        //    c02* inv , c12* inv , c22* inv , c32* inv ,
-        //    c03* inv , c13* inv , c23* inv , c33* inv
-        //);
-
         auto Coef00 = mat.data [ 2 ][ 2 ] * mat.data [ 3 ][ 3 ] - mat.data [ 3 ][ 2 ] * mat.data [ 2 ][ 3 ];
         auto Coef02 = mat.data [ 1 ][ 2 ] * mat.data [ 3 ][ 3 ] - mat.data [ 3 ][ 2 ] * mat.data [ 1 ][ 3 ];
         auto Coef03 = mat.data [ 1 ][ 2 ] * mat.data [ 2 ][ 3 ] - mat.data [ 2 ][ 2 ] * mat.data [ 1 ][ 3 ];
@@ -1224,18 +1186,6 @@ namespace vtx {
         );
     }
 
-    template <arithmetic_t Ty>
-    [[nodiscard]] constexpr auto perspective( const Ty fovy , const Ty aspect , const Ty znear , const Ty zfar ) noexcept {
-        auto tmpVar1 = Ty { 1 } / ( std::tan( fovy / Ty { 2 } ) );
-        auto tmpVar2 = zfar / ( zfar - znear );
-        return matrix_template<Ty , 4 , 4>(
-            tmpVar1 / aspect , Ty { 0 } , Ty { 0 } , Ty { 0 } ,
-                    Ty { 0 } ,  tmpVar1 , Ty { 0 } , Ty { 0 } ,
-                    Ty { 0 } , Ty { 0 } ,  tmpVar2 , Ty { 0 } ,
-                    Ty { 0 } , Ty { 0 } , Ty { 1 } , -znear * tmpVar2
-        );
-    }
-
     /**
      * @brief   Constructs a perspective projection matrix.
      * @tparam  Ty Element type (floating-point).
@@ -1267,6 +1217,19 @@ namespace vtx {
      * @endcode
      */
     template <arithmetic_t Ty>
+    [[nodiscard]] constexpr auto perspective( const Ty fovy , const Ty aspect , const Ty znear , const Ty zfar ) noexcept {
+        auto tmpVar1 = Ty { 1 } / ( std::tan( fovy / Ty { 2 } ) );
+        auto tmpVar2 = zfar / ( zfar - znear );
+        return matrix_template<Ty , 4 , 4>(
+            tmpVar1 / aspect , Ty { 0 } , Ty { 0 } , Ty { 0 } ,
+                    Ty { 0 } ,  tmpVar1 , Ty { 0 } , Ty { 0 } ,
+                    Ty { 0 } , Ty { 0 } ,  tmpVar2 , Ty { 0 } ,
+                    Ty { 0 } , Ty { 0 } , Ty { 1 } , -znear * tmpVar2
+        );
+    }
+
+
+    template <arithmetic_t Ty>
     [[nodiscard]] constexpr auto ortho( const Ty left , const Ty right , const Ty bottom , const Ty top , const Ty znear , const Ty zfar ) noexcept {
         auto tmp1 = right - left;
         auto tmp2 = top - bottom;
@@ -1283,7 +1246,7 @@ namespace vtx {
     /**
      * @brief   Extracts the diagonal elements of a square matrix as a vector.
      * @tparam  Ty Element type.
-     * @tparam  S Matrix dimension (S x S).
+     * @tparam  N Matrix dimension (S x S).
      * @param   mat Input square matrix.
      * @return  vector_template<Ty, S> containing the diagonal elements.
      *
@@ -1294,11 +1257,11 @@ namespace vtx {
      * auto d = diagonal(m);  // vec3f{ m(0,0), m(1,1), m(2,2) }
      * @endcode
      */
-    template <arithmetic_t Ty , std::size_t S>
-    [[nodiscard]] constexpr auto diagonal( const matrix_template<Ty , S , S>& mat ) noexcept {
+    template <arithmetic_t Ty , std::size_t N>
+    [[nodiscard]] constexpr auto diagonal( const matrix_template<Ty , N , N>& mat ) noexcept {
         return [ & ]<std::size_t... I>( std::index_sequence<I...> ) {
-            return vector_template<Ty , S>( mat.data [ I ][ I ]... );
-        }( std::make_index_sequence<S>( ) );
+            return vector_template<Ty , N>( mat.data [ I ][ I ]... );
+        }( std::make_index_sequence<N>( ) );
     }
 
     /**

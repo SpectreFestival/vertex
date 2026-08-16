@@ -1,53 +1,57 @@
-// MIT License
-//
-// Copyright (c) 2026 SpectreFestival
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
 /**
-* @file      vtxtraits.hpp
-* @author    SpectreFestival
-* @license   MIT
-* @brief     Vertex attribute traits for Vulkan vertex input descriptions.
-*
-* @defgroup  vtx_util Utilities
-* @ingroup   vtx
-* @brief     Type traits for mapping Vertex types to Vulkan vertex attributes.
-*
-* @details
-* This header provides vertex_traits<T> which maps Vertex vector/matrix types
-* to Vulkan vertex input attribute properties:
-* - count:   Number of elements (for matrices, number of columns)
-* - format:  Vulkan VkFormat enum value (numeric)
-* - offset_step:  Byte offset between consecutive rows/columns
-*
-* The format values correspond to Vulkan VkFormat enums:
-* - VK_FORMAT_R32_SFLOAT = 100, VK_FORMAT_R32G32_SFLOAT = 103, etc.
-*
-* Usage:
-* @code
-* using Traits = vertex_traits<vec3f>;
-* static_assert(Traits::count == 1);
-* static_assert(Traits::format == 106); // VK_FORMAT_R32G32B32_SFLOAT
-* static_assert(Traits::offset_step == 12);
-* @endcode
-*/
+ * +-------------------------------------------------------------------------------+
+ * | MIT License                                                                   |
+ * +-------------------------------------------------------------------------------+
+ * |                                                                               |
+ * | Copyright (c) 2026 SpectreFestival                                            |
+ * |                                                                               |
+ * | Permission is hereby granted, free of charge, to any person obtaining a copy  |
+ * | of this software and associated documentation files (the "Software"), to deal |
+ * | in the Software without restriction, including without limitation the rights  |
+ * | to use, copy, modify, merge, publish, distribute, sublicense, and/or sell     |
+ * | copies of the Software, and to permit persons to whom the Software is         |
+ * | furnished to do so, subject to the following conditions:                      |
+ * |                                                                               |
+ * | The above copyright notice and this permission notice shall be included in    |
+ * | all copies or substantial portions of the Software.                           |
+ * +-------------------------------------------------------------------------------+
+ * |                                                                               |
+ * | THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR    |
+ * | IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,      |
+ * | FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE   |
+ * | AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER        |
+ * | LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, |
+ * | OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE |
+ * | SOFTWARE.                                                                     |
+ * +-------------------------------------------------------------------------------+
+ *
+ * @file      vtxtraits.hpp
+ * @author    SpectreFestival
+ * @license   MIT
+ * @brief     Vertex attribute traits for Vulkan vertex input descriptions.
+ *
+ * @defgroup  vtx_util Utilities
+ * @ingroup   vtx
+ * @brief     Type traits for mapping Vertex types to Vulkan vertex attributes.
+ *
+ * @details
+ * This header provides vertex_traits<T> which maps Vertex vector/matrix types
+ * to Vulkan vertex input attribute properties:
+ * - count:			Number of elements (for matrices, number of columns)
+ * - format:		Vulkan VkFormat enum value (numeric)
+ * - offset_step:	Byte offset between consecutive rows/columns
+ *
+ * The format values correspond to Vulkan VkFormat enums:
+ * - VK_FORMAT_R32_SFLOAT = 100, VK_FORMAT_R32G32_SFLOAT = 103, etc.
+ *
+ * Usage:
+ * @code
+ * using Traits = vertex_traits<vec3f>;
+ * static_assert(Traits::count == 1);
+ * static_assert(Traits::format == 106); // VK_FORMAT_R32G32B32_SFLOAT
+ * static_assert(Traits::offset_step == 12);
+ * @endcode
+ */
 
 #ifndef VERTEX_TRAITS_HPP
 #define VERTEX_TRAITS_HPP
@@ -77,7 +81,6 @@
  * @namespace vtx
  * @brief Root namespace for Vertex library.
  */
-
 namespace vtx{
 	/**
 	 * @brief	Primary template for vertex traits (undefined).

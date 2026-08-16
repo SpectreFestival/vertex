@@ -1,26 +1,30 @@
-// MIT License
-//
-// Copyright (c) 2026 SpectreFestival
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
 /**
+ * +-------------------------------------------------------------------------------+
+ * | MIT License                                                                   |
+ * +-------------------------------------------------------------------------------+
+ * |                                                                               |
+ * | Copyright (c) 2026 SpectreFestival                                            |
+ * |                                                                               |
+ * | Permission is hereby granted, free of charge, to any person obtaining a copy  |
+ * | of this software and associated documentation files (the "Software"), to deal |
+ * | in the Software without restriction, including without limitation the rights  |
+ * | to use, copy, modify, merge, publish, distribute, sublicense, and/or sell     |
+ * | copies of the Software, and to permit persons to whom the Software is         |
+ * | furnished to do so, subject to the following conditions:                      |
+ * |                                                                               |
+ * | The above copyright notice and this permission notice shall be included in    |
+ * | all copies or substantial portions of the Software.                           |
+ * +-------------------------------------------------------------------------------+
+ * |                                                                               |
+ * | THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR    |
+ * | IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,      |
+ * | FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE   |
+ * | AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER        |
+ * | LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, |
+ * | OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE |
+ * | SOFTWARE.                                                                     |
+ * +-------------------------------------------------------------------------------+
+ *
  * @file      vtxquat.hpp
  * @author    SpectreFestival
  * @license   MIT
@@ -35,17 +39,18 @@
  * - quat_template<Ty> - quaternion with w, x, y, z components
  * - Arithmetic operators (+, -, *, /) and compound assignments
  * - Quaternion multiplication (Hamilton product)
- * - dot() - quaternion dot product
- * - conjugate() - quaternion conjugate
- * - magnitude() / normalize() - quaternion normalization
- * - inverse() - quaternion inverse
+ * - dot()			 - quaternion dot product
+ * - conjugate()	 - quaternion conjugate
+ * - magnitude()     - quaternion normalization
+ * - normalize()     - quaternion normalization
+ * - inverse()		 - quaternion inverse
  * - rotate_vector() - rotate a 3D vector using a quaternion
- * - slerp() - spherical linear interpolation
- * - lerp() - linear interpolation (with normalization)
- * - angle_axis() - create quaternion from angle-axis representation
- * - to_matrix() - convert to 3x3 rotation matrix
- * - matrix4_cast() - convert to 4x4 rotation matrix
- * - quat_cast() - convert 3x3 rotation matrix to quaternion
+ * - slerp()		 - spherical linear interpolation
+ * - lerp()			 - linear interpolation (with normalization)
+ * - angle_axis()	 - create quaternion from angle-axis representation
+ * - to_matrix()	 - convert to 3x3 rotation matrix
+ * - matrix4_cast()  - convert to 4x4 rotation matrix
+ * - quat_cast()	 - convert 3x3 rotation matrix to quaternion
  * 
  * @note Quaternion components are stored as (w, x, y, z).
  *       w is the scalar (real) part, (x, y, z) is the vector (imaginary) part.
@@ -76,7 +81,7 @@ namespace vtx {
      * - w: scalar (real) part
      * - (x, y, z): vector (imaginary) part
      *
-     * For rotation quaternions, w = cos(θ/2) and (x, y, z) = sin(θ/2) * axis.
+     * For rotation quaternions, w = cos(theta/2) and (x, y, z) = sin(theta/2) * axis.
      *
      * Example:
      * @code
@@ -435,8 +440,8 @@ namespace vtx {
      * - Otherwise, interpolate using spherical trigonometry.
      *
      * The interpolation formula is:
-     * slerp(q1, q2, t) = sin((1-t)*θ)/sin(θ) * q1 + sin(t*θ)/sin(θ) * q2
-     * where θ = acos(dot(q1, q2)).
+     * slerp(q1, q2, t) = sin((1-t)*theta)/sin(theta) * q1 + sin(t*theta)/sin(theta) * q2
+     * where theta = acos(dot(q1, q2)).
      *
      * @note    t should be in the range [0, 1]. Values outside this range may produce
      *          unexpected results.
@@ -503,8 +508,8 @@ namespace vtx {
      * @return  Quaternion representing the rotation.
      *
      * @details
-     * Constructs a quaternion from angle θ and axis a:
-     * q = (cos(θ/2), sin(θ/2) * a)
+     * Constructs a quaternion from angle theta and axis a:
+     * q = (cos(theta/2), sin(theta/2) * a)
      *
      * The axis is automatically normalized before computation.
      *

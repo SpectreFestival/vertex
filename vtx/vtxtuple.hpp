@@ -1,58 +1,62 @@
-// MIT License
-//
-// Copyright (c) 2026 SpectreFestival
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
 /**
-* @file      vtxtuple.hpp
-* @author    SpectreFestival
-* @license   MIT
-* @brief     Tuple-like container for composable vertex input types.
-*
-* @defgroup  vtx_util Utilities
-* @ingroup   vtx
-* @brief     Vertex tuple container for Vulkan vertex input assembly.
-*
-* @details
-* This header provides:
-* - vertex_element<I, Ty> - type-tagged element wrapper
-* - vertex_template<I, Ty...> - recursive tuple-like container
-* - vertex<Ty...> - alias for vertex_template<0, Ty...>
-* - get<I>(vertex) - element accessor (similar to std::get)
-* - compute_offset() - compute byte offsets of each element
-* - MakeVertexLayout() - generate Vulkan vertex input descriptions
-*
-* The vertex tuple allows composing arbitrary vertex attribute types and
-* automatically generating Vulkan VkVertexInputAttributeDescription structures.
-*
-* Example:
-* @code
-* using Vertex = vertex<vec3f, vec3f, vec2f>;
-* Vertex v{pos, normal, uv};
-* auto& pos = get<0>(v);
-* auto layout = MakeVertexLayout<vec3f, vec3f, vec2f>();
-* // layout[0] -> position (location=0, format=106, offset=0)
-* // layout[1] -> normal   (location=1, format=106, offset=12)
-* // layout[2] -> uv       (location=2, format=103, offset=24)
-* @endcode
-*/
+ * +-------------------------------------------------------------------------------+
+ * | MIT License                                                                   |
+ * +-------------------------------------------------------------------------------+
+ * |                                                                               |
+ * | Copyright (c) 2026 SpectreFestival                                            |
+ * |                                                                               |
+ * | Permission is hereby granted, free of charge, to any person obtaining a copy  |
+ * | of this software and associated documentation files (the "Software"), to deal |
+ * | in the Software without restriction, including without limitation the rights  |
+ * | to use, copy, modify, merge, publish, distribute, sublicense, and/or sell     |
+ * | copies of the Software, and to permit persons to whom the Software is         |
+ * | furnished to do so, subject to the following conditions:                      |
+ * |                                                                               |
+ * | The above copyright notice and this permission notice shall be included in    |
+ * | all copies or substantial portions of the Software.                           |
+ * +-------------------------------------------------------------------------------+
+ * |                                                                               |
+ * | THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR    |
+ * | IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,      |
+ * | FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE   |
+ * | AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER        |
+ * | LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, |
+ * | OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE |
+ * | SOFTWARE.                                                                     |
+ * +-------------------------------------------------------------------------------+
+ *
+ * @file      vtxtuple.hpp
+ * @author    SpectreFestival
+ * @license   MIT
+ * @brief     Tuple-like container for composable vertex input types.
+ *
+ * @defgroup  vtx_util Utilities
+ * @ingroup   vtx
+ * @brief     Vertex tuple container for Vulkan vertex input assembly.
+ *
+ * @details
+ * This header provides:
+ * - vertex_element<I, Ty>      - type-tagged element wrapper
+ * - vertex_template<I, Ty...>  - recursive tuple-like container
+ * - vertex<Ty...>              - alias for vertex_template<0, Ty...>
+ * - get<I>(vertex)             - element accessor (similar to std::get)
+ * - compute_offset()           - compute byte offsets of each element
+ * - MakeVertexLayout()         - generate Vulkan vertex input descriptions
+ *
+ * The vertex tuple allows composing arbitrary vertex attribute types and
+ * automatically generating Vulkan VkVertexInputAttributeDescription structures.
+ *
+ * Example:
+ * @code
+ * using Vertex = vertex<vec3f, vec3f, vec2f>;
+ * Vertex v{pos, normal, uv};
+ * auto& pos = get<0>(v);
+ * auto layout = MakeVertexLayout<vec3f, vec3f, vec2f>();
+ * // layout[0] -> position (location=0, format=106, offset=0 )
+ * // layout[1] -> normal   (location=1, format=106, offset=12)
+ * // layout[2] -> uv       (location=2, format=103, offset=24)
+ * @endcode
+ */
 
 #ifndef VERTEX_TUPLE_HPP
 #define VERTEX_TUPLE_HPP
@@ -82,10 +86,10 @@ namespace vtx {
      * Example:
      * @code
      * vertex_layout layout{
-     *     .location = 0,
-     *     .vkformat = 106,  // VK_FORMAT_R32G32B32_SFLOAT
-     *     .count = 1,
-     *     .offset = 0,
+     *     .location    = 0,
+     *     .vkformat    = 106,  // VK_FORMAT_R32G32B32_SFLOAT
+     *     .count       = 1,
+     *     .offset      = 0,
      *     .offset_step = 12
      * };
      * @endcode
@@ -476,7 +480,7 @@ namespace vtx {
      * @tparam  I Index of the element to access.
      * @tparam  Ty Element types of the vertex.
      * @param   vt Vertex tuple to access.
-     * @return Reference to the stored value.
+     * @return  Reference to the stored value.
      *
      * @details
      * This is the primary user-facing accessor for vertex tuples.
@@ -572,9 +576,9 @@ namespace vtx {
      * // layout[2]: location=2, format=103 (R32G32_SFLOAT), offset=24
      * @endcode
      *
-     * @note Each unique type gets a consecutive location starting from 0.
-     * @see vertex_layout
-     * @see vertex_traits
+     * @note    Each unique type gets a consecutive location starting from 0.
+     * @see     vertex_layout
+     * @see     vertex_traits
      */
     template <typename... Ty>
     std::vector<vertex_layout> MakeVertexLayout( ) noexcept{
@@ -582,7 +586,7 @@ namespace vtx {
         using Types = std::tuple<Ty...>;
         std::vector<vertex_layout> layouts( sizeof...( Ty ) );
         std::uint32_t running_loc = 0;
-        [ & ] <std::size_t... I>( std::index_sequence<I...> ){
+        [ & ]<std::size_t... I>( std::index_sequence<I...> ){
             ( ( layouts [ I ] = vertex_layout {
                 .location       = running_loc,
                 .vkformat       = vertex_traits<std::tuple_element_t<I, Types>>::format,
@@ -596,4 +600,4 @@ namespace vtx {
     }
 }
 
-#endif //VTX_TUPLE_HPP
+#endif //VERTEX_TUPLE_HPP
