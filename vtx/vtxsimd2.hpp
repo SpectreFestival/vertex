@@ -271,6 +271,7 @@ namespace vtx {
         return result;
     }
 
+    [[deprecated("Negative performance impact: excessive thread launch latency. Prefer single-threaded version.")]]
     VERTEX_FUNCTION_OPTIMIZATION( VERTEX_OPT_AVX2_NAME )
     inline auto inverse_mthread( const mat4x4f32& mat ) noexcept -> mat4x4f32 {
         auto tmp00 = __m128{};
