@@ -25,58 +25,34 @@
  * | SOFTWARE.                                                                     |
  * +-------------------------------------------------------------------------------+
  *
- * @file      vtxmat2x2.hpp
+ * @file      vtxvector3.hpp
  * @author    SpectreFestival
  * @license   MIT
- * @brief     2x2 matrix type aliases.
+ * @brief     3-dimensional vector type aliases.
  *
- * @defgroup  vtx_matrix Matrices
+ * @defgroup  vtx_vector Vectors
  * @ingroup   vtx
- * @brief     2x2 matrix aliases for all arithmetic types.
+ * @brief     3D vector aliases for all arithmetic types.
  */
-
-#ifndef VERTEX_MATRIX2X2_HPP
-#define VERTEX_MATRIX2X2_HPP
+#ifndef VERTEX_VECTOR3_HPP
+#define VERTEX_VECTOR3_HPP
 #pragma once
-
-#include "vtxbasic.hpp"    ///< arithmetic_t, vi32, vf32, etc.
-#include "vtxmatcxr.hpp"   ///< matrix_template<T, R, C>
+#include "vtxvector.hpp"
 
 namespace vtx {
-
     template <arithmetic_t Ty>
-    using mat2x2 = matrix_template<Ty, 2, 2>;
+    using vec3 = vector_template<Ty , 3>;
 
-    //==========================================================================
-    // Type-specific 2x2 matrix aliases
-    //==========================================================================
+    using vec3i08 = vec3<vi08>;
+    using vec3i16 = vec3<vi16>;
+    using vec3i32 = vec3<vi32>;
+    using vec3i64 = vec3<vi64>;
+    using vec3u08 = vec3<vu08>;
+    using vec3u16 = vec3<vu16>;
+    using vec3u32 = vec3<vu32>;
+    using vec3u64 = vec3<vu64>;
+    using vec3f32 = vec3<vf32>;
+    using vec3f64 = vec3<vf64>;
+}
 
-    using mat2x2i08 = mat2x2<vi08>;  ///< 2x2 matrix of signed  8-bit integers
-    using mat2x2i16 = mat2x2<vi16>;  ///< 2x2 matrix of signed 16-bit integers
-    using mat2x2i32 = mat2x2<vi32>;  ///< 2x2 matrix of signed 32-bit integers
-    using mat2x2i64 = mat2x2<vi64>;  ///< 2x2 matrix of signed 64-bit integers
-
-    using mat2x2u08 = mat2x2<vu08>;  ///< 2x2 matrix of unsigned  8-bit integers
-    using mat2x2u16 = mat2x2<vu16>;  ///< 2x2 matrix of unsigned 16-bit integers
-    using mat2x2u32 = mat2x2<vu32>;  ///< 2x2 matrix of unsigned 32-bit integers
-    using mat2x2u64 = mat2x2<vu64>;  ///< 2x2 matrix of unsigned 64-bit integers
-
-    using mat2x2f32 = mat2x2<vf32>;  ///< 2x2 matrix of 32-bit floats
-    using mat2x2f64 = mat2x2<vf64>;  ///< 2x2 matrix of 64-bit floats
-
-    //==========================================================================
-    // Default convenience aliases
-    //==========================================================================
-
-    using mat2x2i = mat2x2i32;       ///< Default signed   2x2 matrix (32-bit)
-    using mat2x2u = mat2x2u32;       ///< Default unsigned 2x2 matrix (32-bit)
-    using mat2x2f = mat2x2f32;       ///< Default float    2x2 matrix (32-bit)
-    using mat2x2d = mat2x2f64;       ///< Default double   2x2 matrix (64-bit)
-
-    using mat2f = mat2x2f;           ///< Default signed   2x2 matrix (32-bit)
-    using mat2d = mat2x2d;           ///< Default unsigned 2x2 matrix (32-bit)
-    using mat2i = mat2x2i;           ///< Default float    2x2 matrix (32-bit)
-    using mat2u = mat2x2u;           ///< Default double   2x2 matrix (64-bit)
-} // namespace vtx
-
-#endif // VERTEX_MATRIX2X2_HPP
+#endif

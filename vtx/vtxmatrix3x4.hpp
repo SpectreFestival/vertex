@@ -25,58 +25,31 @@
  * | SOFTWARE.                                                                     |
  * +-------------------------------------------------------------------------------+
  *
- * @file      vtxmat3x3.hpp
+ * @file      vtxmatrix3x4.hpp
  * @author    SpectreFestival
  * @license   MIT
- * @brief     3x3 matrix type aliases.
+ * @brief     3x4 matrix type aliases.
  *
  * @defgroup  vtx_matrix Matrices
  * @ingroup   vtx
- * @brief     3x3 matrix aliases for all arithmetic types.
+ * @brief     3x4 matrix aliases for all arithmetic types.
  */
-
-#ifndef VERTEX_MATRIX3X3_HPP
-#define VERTEX_MATRIX3X3_HPP
+#ifndef VERTEX_MATRIX3X4_HPP
+#define VERTEX_MATRIX3X4_HPP
 #pragma once
-
-#include "vtxbasic.hpp"    ///< arithmetic_t, vi32, vf32, etc.
-#include "vtxmatcxr.hpp"   ///< matrix_template<T, R, C>
+#include "vtxmatrix.hpp"
 
 namespace vtx {
+    using mat3x4i08 = matrix_template<vi08 , 4 , 3>;
+    using mat3x4i16 = matrix_template<vi16 , 4 , 3>;
+    using mat3x4i32 = matrix_template<vi32 , 4 , 3>;
+    using mat3x4i64 = matrix_template<vi64 , 4 , 3>;
+    using mat3x4u08 = matrix_template<vu08 , 4 , 3>;
+    using mat3x4u16 = matrix_template<vu16 , 4 , 3>;
+    using mat3x4u32 = matrix_template<vu32 , 4 , 3>;
+    using mat3x4u64 = matrix_template<vu64 , 4 , 3>;
+    using mat3x4f32 = matrix_template<vf32 , 4 , 3>;
+    using mat3x4f64 = matrix_template<vf64 , 4 , 3>;
+}
 
-    template <arithmetic_t Ty>
-    using mat3x3 = matrix_template<Ty, 3, 3>;
-
-    //==========================================================================
-    // Type-specific 3x3 matrix aliases
-    //==========================================================================
-
-    using mat3x3i08 = mat3x3<vi08>;  ///< 3x3 matrix of signed  8-bit integers
-    using mat3x3i16 = mat3x3<vi16>;  ///< 3x3 matrix of signed 16-bit integers
-    using mat3x3i32 = mat3x3<vi32>;  ///< 3x3 matrix of signed 32-bit integers
-    using mat3x3i64 = mat3x3<vi64>;  ///< 3x3 matrix of signed 64-bit integers
-
-    using mat3x3u08 = mat3x3<vu08>;  ///< 3x3 matrix of unsigned  8-bit integers
-    using mat3x3u16 = mat3x3<vu16>;  ///< 3x3 matrix of unsigned 16-bit integers
-    using mat3x3u32 = mat3x3<vu32>;  ///< 3x3 matrix of unsigned 32-bit integers
-    using mat3x3u64 = mat3x3<vu64>;  ///< 3x3 matrix of unsigned 64-bit integers
-
-    using mat3x3f32 = mat3x3<vf32>;  ///< 3x3 matrix of 32-bit floats
-    using mat3x3f64 = mat3x3<vf64>;  ///< 3x3 matrix of 64-bit floats
-
-    //==========================================================================
-    // Default convenience aliases
-    //==========================================================================
-
-    using mat3x3i = mat3x3i32;       ///< Default signed   3x3 matrix (32-bit)
-    using mat3x3u = mat3x3u32;       ///< Default unsigned 3x3 matrix (32-bit)
-    using mat3x3f = mat3x3f32;       ///< Default float    3x3 matrix (32-bit)
-    using mat3x3d = mat3x3f64;       ///< Default double   3x3 matrix (64-bit)
-
-    using mat3f = mat3x3f;           ///< Default signed   3x3 matrix (32-bit)
-    using mat3d = mat3x3d;           ///< Default unsigned 3x3 matrix (32-bit)
-    using mat3i = mat3x3i;           ///< Default float    3x3 matrix (32-bit)
-    using mat3u = mat3x3u;           ///< Default double   3x3 matrix (64-bit)
-} // namespace vtx
-
-#endif // VERTEX_MATRIX3X3_HPP
+#endif

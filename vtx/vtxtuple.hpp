@@ -33,29 +33,6 @@
  * @defgroup  vtx_util Utilities
  * @ingroup   vtx
  * @brief     Vertex tuple container for Vulkan vertex input assembly.
- *
- * @details
- * This header provides:
- * - vertex_element<I, Ty>      - type-tagged element wrapper
- * - vertex_template<I, Ty...>  - recursive tuple-like container
- * - vertex<Ty...>              - alias for vertex_template<0, Ty...>
- * - get<I>(vertex)             - element accessor (similar to std::get)
- * - compute_offset()           - compute byte offsets of each element
- * - MakeVertexLayout()         - generate Vulkan vertex input descriptions
- *
- * The vertex tuple allows composing arbitrary vertex attribute types and
- * automatically generating Vulkan VkVertexInputAttributeDescription structures.
- *
- * Example:
- * @code
- * using Vertex = vertex<vec3f, vec3f, vec2f>;
- * Vertex v{pos, normal, uv};
- * auto& pos = get<0>(v);
- * auto layout = MakeVertexLayout<vec3f, vec3f, vec2f>();
- * // layout[0] -> position (location=0, format=106, offset=0 )
- * // layout[1] -> normal   (location=1, format=106, offset=12)
- * // layout[2] -> uv       (location=2, format=103, offset=24)
- * @endcode
  */
 
 #ifndef VERTEX_TUPLE_HPP
@@ -63,7 +40,6 @@
 #pragma once
 
 #include "vtxtraits.hpp"    ///< vertex_traits<T>
-#include <type_traits>      ///< std::is_same, std::forward, std::integral_constant
 #include <vector>           ///< std::vector
 #include <tuple>            ///< std::tuple_element_t, std::index_sequence
 
@@ -116,22 +92,6 @@ namespace vtx {
      * vertex_template<I, T0, T1, T2...>
      *   : vertex_element<I, T0>
      *   , vertex_template<I+1, T1, T2...>
-     *
-     * This enables:
-     * - Compile-time index-based element access via get<I>()
-     * - Zero-cost abstraction (all operations inline)
-     * - Automatic offset computation for Vulkan vertex layouts
-     *
-     * Example:
-     * @code
-     * using MyVertex = vertex_template<0, vec3f, vec3f, vec2f>;
-     * MyVertex v{pos, normal, uv};
-     * auto& pos = v.get<0>();
-     * @endcode
-     *
-     * @see     vertex_element
-     * @see     get<I>()
-     * @see     MakeVertexLayout()
      */
     template <std::size_t I , typename... Ty>
     class vertex_template;
@@ -219,13 +179,6 @@ namespace vtx {
      * @tparam  I Index of the single element.
      * @tparam  Ty Type of the single element.
      *
-     * @details
-     * This specialization terminates the recursive inheritance chain.
-     * It stores a single vertex_element<I, Ty> and provides:
-     * - Value construction from U
-     * - Assignment from U
-     * - Indexed access via get<I>()
-     *
      * @note Static_assert in get() ensures index is correct.
      */
     template <size_t I , typename Ty>
@@ -247,7 +200,6 @@ namespace vtx {
          * @tparam  U Type of the source vertex_template.
          * @param   other Source vertex_template to move from.
          */
-        template <typename U>
         constexpr vertex_template( vertex_template&& other ) noexcept
         : my_element( std::move( other.my_element ) )
         {}
@@ -332,14 +284,6 @@ namespace vtx {
      * @tparam  ThisTy Type of the current element.
      * @tparam  NextTy Type of the next element.
      * @tparam  RestTy Remaining element types.
-     *
-     * @details
-     * Inherits from:
-     * - vertex_element<I, ThisTy> to store the current element
-     * - vertex_template<I+1, NextTy, RestTy...> to store the remaining elements
-     *
-     * This creates a compile-time linked list of elements, each with a unique
-     * index tag, enabling O(1) index-based access via template recursion.
      */
     template <std::size_t I , typename ThisTy , typename NextTy , typename... RestTy>
     class vertex_template<I , ThisTy , NextTy , RestTy...>
@@ -436,18 +380,6 @@ namespace vtx {
      * @details
      * Uses pointer arithmetic to compute the offset of each element
      * relative to the start of the vertex struct.
-     *
-     * The offsets are computed at runtime using `reinterpret_cast` on
-     * the addresses of the `get<I>()` results.
-     *
-     * Example:
-     * @code
-     * using Vertex = vertex<vec3f, vec3f, vec2f>;
-     * auto offsets = compute_element_offset<vec3f, vec3f, vec2f>{}.call();
-     * // offsets[0] = 0
-     * // offsets[1] = 12
-     * // offsets[2] = 24
-     * @endcode
      */
     template <typename ...Ty>
     struct compute_element_offset{

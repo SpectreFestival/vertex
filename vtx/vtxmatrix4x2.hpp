@@ -25,59 +25,31 @@
  * | SOFTWARE.                                                                     |
  * +-------------------------------------------------------------------------------+
  *
- * @file      vtxmat3x2.hpp
+ * @file      vtxmatrix4x2.hpp
  * @author    SpectreFestival
  * @license   MIT
- * @brief     3x2 matrix type aliases.
+ * @brief     4x2 matrix type aliases.
  *
  * @defgroup  vtx_matrix Matrices
  * @ingroup   vtx
- * @brief     3x2 matrix aliases for all arithmetic types.
- *
- * @note      Matrix dimensions are (R rows, C columns) = (2 rows, 3 columns).
- *            The alias name "3x2" indicates the **logical** dimension (3 rows, 2 columns),
- *            but the template parameter order is matrix_template<Ty, R, C>.
- *            Therefore mat3x2 = matrix_template<Ty, 2, 3>.
+ * @brief     4x2 matrix aliases for all arithmetic types.
  */
-
-#ifndef VERTEX_MATRIX3X2_HPP
-#define VERTEX_MATRIX3X2_HPP
+#ifndef VERTEX_MATRIX4X2_HPP
+#define VERTEX_MATRIX4X2_HPP
 #pragma once
-
-#include "vtxbasic.hpp"    ///< arithmetic_t, vi32, vf32, etc.
-#include "vtxmatcxr.hpp"   ///< matrix_template<T, R, C>
+#include "vtxmatrix.hpp"
 
 namespace vtx {
+    using mat4x2i08 = matrix_template<vi08 , 2 , 4>;
+    using mat4x2i16 = matrix_template<vi16 , 2 , 4>;
+    using mat4x2i32 = matrix_template<vi32 , 2 , 4>;
+    using mat4x2i64 = matrix_template<vi64 , 2 , 4>;
+    using mat4x2u08 = matrix_template<vu08 , 2 , 4>;
+    using mat4x2u16 = matrix_template<vu16 , 2 , 4>;
+    using mat4x2u32 = matrix_template<vu32 , 2 , 4>;
+    using mat4x2u64 = matrix_template<vu64 , 2 , 4>;
+    using mat4x2f32 = matrix_template<vf32 , 2 , 4>;
+    using mat4x2f64 = matrix_template<vf64 , 2 , 4>;
+}
 
-    template <arithmetic_t Ty>
-    using mat3x2 = matrix_template<Ty, 2, 3>;
-
-    //==========================================================================
-    // Type-specific 3x2 matrix aliases
-    //==========================================================================
-
-    using mat3x2i08 = mat3x2<vi08>;  ///< 3x2 matrix of signed  8-bit integers
-    using mat3x2i16 = mat3x2<vi16>;  ///< 3x2 matrix of signed 16-bit integers
-    using mat3x2i32 = mat3x2<vi32>;  ///< 3x2 matrix of signed 32-bit integers
-    using mat3x2i64 = mat3x2<vi64>;  ///< 3x2 matrix of signed 64-bit integers
-
-    using mat3x2u08 = mat3x2<vu08>;  ///< 3x2 matrix of unsigned  8-bit integers
-    using mat3x2u16 = mat3x2<vu16>;  ///< 3x2 matrix of unsigned 16-bit integers
-    using mat3x2u32 = mat3x2<vu32>;  ///< 3x2 matrix of unsigned 32-bit integers
-    using mat3x2u64 = mat3x2<vu64>;  ///< 3x2 matrix of unsigned 64-bit integers
-
-    using mat3x2f32 = mat3x2<vf32>;  ///< 3x2 matrix of 32-bit floats
-    using mat3x2f64 = mat3x2<vf64>;  ///< 3x2 matrix of 64-bit floats
-
-    //==========================================================================
-    // Default convenience aliases
-    //==========================================================================
-
-    using mat3x2i = mat3x2i32;       ///< Default signed   3x2 matrix (32-bit)
-    using mat3x2u = mat3x2u32;       ///< Default unsigned 3x2 matrix (32-bit)
-    using mat3x2f = mat3x2f32;       ///< Default float    3x2 matrix (32-bit)
-    using mat3x2d = mat3x2f64;       ///< Default double   3x2 matrix (64-bit)
-
-} // namespace vtx
-
-#endif // VERTEX_MATRIX3X2_HPP
+#endif

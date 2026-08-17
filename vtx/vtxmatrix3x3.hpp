@@ -25,53 +25,31 @@
  * | SOFTWARE.                                                                     |
  * +-------------------------------------------------------------------------------+
  *
- * @file      vtxvec3.hpp
+ * @file      vtxmatrix3x3.hpp
  * @author    SpectreFestival
  * @license   MIT
- * @brief     3-dimensional vector type aliases.
+ * @brief     3x3 matrix type aliases.
  *
- * @defgroup  vtx_vector Vectors
+ * @defgroup  vtx_matrix Matrices
  * @ingroup   vtx
- * @brief     3D vector aliases for all arithmetic types.
+ * @brief     3x3 matrix aliases for all arithmetic types.
  */
-
-#ifndef VERTEX_VECTOR3_HPP
-#define VERTEX_VECTOR3_HPP
+#ifndef VERTEX_MATRIX3X3_HPP
+#define VERTEX_MATRIX3X3_HPP
 #pragma once
-
-#include "vtxbasic.hpp"   ///< arithmetic_t, vi32, vf32, etc.
-#include "vtxvecx.hpp"    ///< vector_template<T, N>
+#include "vtxmatrix.hpp"
 
 namespace vtx {
+    using mat3x3i08 = matrix_template<vi08 , 3 , 3>;
+    using mat3x3i16 = matrix_template<vi16 , 3 , 3>;
+    using mat3x3i32 = matrix_template<vi32 , 3 , 3>;
+    using mat3x3i64 = matrix_template<vi64 , 3 , 3>;
+    using mat3x3u08 = matrix_template<vu08 , 3 , 3>;
+    using mat3x3u16 = matrix_template<vu16 , 3 , 3>;
+    using mat3x3u32 = matrix_template<vu32 , 3 , 3>;
+    using mat3x3u64 = matrix_template<vu64 , 3 , 3>;
+    using mat3x3f32 = matrix_template<vf32 , 3 , 3>;
+    using mat3x3f64 = matrix_template<vf64 , 3 , 3>;
+}
 
-    template <arithmetic_t Ty>
-    using vec3 = vector_template<Ty, 3>;
-
-    //==========================================================================
-    // Type-specific 3D vector aliases
-    //==========================================================================
-
-    using vec3i08 = vec3<vi08>;  ///< 3D vector of signed  8-bit integers
-    using vec3i16 = vec3<vi16>;  ///< 3D vector of signed 16-bit integers
-    using vec3i32 = vec3<vi32>;  ///< 3D vector of signed 32-bit integers
-    using vec3i64 = vec3<vi64>;  ///< 3D vector of signed 64-bit integers
-
-    using vec3u08 = vec3<vu08>;  ///< 3D vector of unsigned  8-bit integers
-    using vec3u16 = vec3<vu16>;  ///< 3D vector of unsigned 16-bit integers
-    using vec3u32 = vec3<vu32>;  ///< 3D vector of unsigned 32-bit integers
-    using vec3u64 = vec3<vu64>;  ///< 3D vector of unsigned 64-bit integers
-
-    using vec3f32 = vec3<vf32>;  ///< 3D vector of 32-bit floats
-    using vec3f64 = vec3<vf64>;  ///< 3D vector of 64-bit floats
-
-    //==========================================================================
-    // Default convenience aliases
-    //==========================================================================
-
-    using vec3i = vec3i32;       ///< Default signed   3D vector (32-bit)
-    using vec3u = vec3u32;       ///< Default unsigned 3D vector (32-bit)
-    using vec3f = vec3f32;       ///< Default float    3D vector (32-bit)
-    using vec3d = vec3f64;       ///< Default double   3D vector (64-bit)
-} // namespace vtx
-
-#endif // VERTEX_VECTOR3_HPP
+#endif

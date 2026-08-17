@@ -53,8 +53,8 @@
 #define VERTEX_STRING_HPP
 #pragma once
 
-#include "vtxvecx.hpp"     ///< vector_template<T, N>
-#include "vtxmatcxr.hpp"   ///< matrix_template<T, R, C>
+#include "vtxvector.hpp"     ///< vector_template<Ty, N>
+#include "vtxmatrix.hpp"     ///< matrix_template<Ty, R, C>
 
 #include <string>     ///< std::string
 #include <format>     ///< std::format, std::formatter, std::format_to
@@ -120,9 +120,11 @@ namespace vtx {
 
 } // namespace vtx
 
-  //==============================================================================
-  // std::formatter specialization for vtx::vector_template
-  //==============================================================================
+/*
+ *+-----------------------------------------------------------------------------+
+ *| std::formatter specialization for vtx::vector_template                      |
+ *+-----------------------------------------------------------------------------+
+ */
 
 template <vtx::arithmetic_t Ty, std::size_t N>
 struct std::formatter<vtx::vector_template<Ty, N>> {

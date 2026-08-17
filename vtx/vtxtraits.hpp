@@ -59,21 +59,19 @@
 
 #include "vtxbasic.hpp"      ///< arithmetic_t, vi32, vf32, etc.
 
-#include "vtxvecx.hpp"       ///< vector_template<T, N>
-#include "vtxvec2.hpp"       ///< vec2<T>
-#include "vtxvec3.hpp"       ///< vec3<T>
-#include "vtxvec4.hpp"       ///< vec4<T>
+#include "vtxvector2.hpp"       ///< vec2<T>
+#include "vtxvector3.hpp"       ///< vec3<T>
+#include "vtxvector4.hpp"       ///< vec4<T>
 
-#include "vtxmatcxr.hpp"     ///< matrix_template<T, R, C>
-#include "vtxmat2x2.hpp"     ///< mat2x2<T>
-#include "vtxmat2x3.hpp"     ///< mat2x3<T>
-#include "vtxmat2x4.hpp"     ///< mat2x4<T>
-#include "vtxmat3x2.hpp"     ///< mat3x2<T>
-#include "vtxmat3x3.hpp"     ///< mat3x3<T>
-#include "vtxmat3x4.hpp"     ///< mat3x4<T>
-#include "vtxmat4x2.hpp"     ///< mat4x2<T>
-#include "vtxmat4x3.hpp"     ///< mat4x3<T>
-#include "vtxmat4x4.hpp"     ///< mat4x4<T>
+#include "vtxmatrix2x2.hpp"     ///< mat2x2<T>
+#include "vtxmatrix2x3.hpp"     ///< mat2x3<T>
+#include "vtxmatrix2x4.hpp"     ///< mat2x4<T>
+#include "vtxmatrix3x2.hpp"     ///< mat3x2<T>
+#include "vtxmatrix3x3.hpp"     ///< mat3x3<T>
+#include "vtxmatrix3x4.hpp"     ///< mat3x4<T>
+#include "vtxmatrix4x2.hpp"     ///< mat4x2<T>
+#include "vtxmatrix4x3.hpp"     ///< mat4x3<T>
+#include "vtxmatrix4x4.hpp"     ///< mat4x4<T>
 
 #include <cstdint>           ///< uint32_t
 

@@ -51,25 +51,17 @@
  * - to_matrix()	 - convert to 3x3 rotation matrix
  * - matrix4_cast()  - convert to 4x4 rotation matrix
  * - quat_cast()	 - convert 3x3 rotation matrix to quaternion
- * 
+ *
  * @note Quaternion components are stored as (w, x, y, z).
  *       w is the scalar (real) part, (x, y, z) is the vector (imaginary) part.
- *
- * Example:
- * @code
- * auto q = angle_axis(radians(45.0f), vec3f{0, 1, 0});
- * auto v_rot = rotate_vector(q, vec3f{1, 0, 0});
- * auto m = matrix4_cast(q);
- * @endcode
  */
 
 #ifndef VERTEX_QUAT_HPP
 #define VERTEX_QUAT_HPP
 #pragma once
 
-#include "vtxbasic.hpp"     ///< arithmetic_t, VERTEX_CONSTEXPR, vtx type aliases
-#include "vtxvecx.hpp"      ///< vector_template<T, N>, dot(), normalize(), cross()
-#include "vtxmat4x4.hpp"    ///< matrix_template<T, 4, 4>
+#include "vtxvector.hpp"    ///< vector_template<T, N>, dot(), normalize(), cross()
+#include "vtxmatrix.hpp"    ///< matrix_template<T, 4, 4>
 
 namespace vtx {
     /**
@@ -90,7 +82,7 @@ namespace vtx {
      */
     template <arithmetic_t Ty>
     struct quat_template {
-        Ty w{};  ///< Scalar (real) component
+        Ty w{};  ///< Scalar (real     )   component
         Ty x{};  ///< Vector (imaginary) X component
         Ty y{};  ///< Vector (imaginary) Y component
         Ty z{};  ///< Vector (imaginary) Z component
@@ -134,11 +126,11 @@ namespace vtx {
      */
     template <arithmetic_t Ty>
 	constexpr quat_template<Ty> operator+( const quat_template<Ty>& quat1 , const quat_template<Ty>& quat2 ) noexcept {
-		return quat_template<Ty>( 
-			quat1.w + quat2.w , 
-			quat1.x + quat2.x , 
-			quat1.y + quat2.y , 
-			quat1.z + quat2.z 
+		return quat_template<Ty>(
+			quat1.w + quat2.w ,
+			quat1.x + quat2.x ,
+			quat1.y + quat2.y ,
+			quat1.z + quat2.z
 		);
 	}
 
@@ -150,14 +142,14 @@ namespace vtx {
      */
     template <arithmetic_t Ty>
     constexpr quat_template<Ty> operator-( const quat_template<Ty>& quat1 , const quat_template<Ty>& quat2 ) noexcept {
-    	return quat_template<Ty>( 
-    		quat1.w - quat2.w , 
-    		quat1.x - quat2.x ,  
-    		quat1.y - quat2.y , 
-    		quat1.z - quat2.z 
+    	return quat_template<Ty>(
+    		quat1.w - quat2.w ,
+    		quat1.x - quat2.x ,
+    		quat1.y - quat2.y ,
+    		quat1.z - quat2.z
     	);
     }
-    
+
     /**
      * @brief   Scalar multiplication (quaternion * scalar).
      * @tparam  Ty Quaternion element type.
@@ -168,14 +160,14 @@ namespace vtx {
      */
     template <arithmetic_t Ty, arithmetic_t U>
     constexpr quat_template<Ty> operator*( const quat_template<Ty>& quat , const U& scale ) noexcept {
-    	return quat_template<Ty>( 
-    		quat.w * scale , 
-    		quat.x * scale , 
-    		quat.y * scale , 
-    		quat.z * scale 
+    	return quat_template<Ty>(
+    		quat.w * scale ,
+    		quat.x * scale ,
+    		quat.y * scale ,
+    		quat.z * scale
     	);
     }
-    
+
     /**
      * @brief   Scalar division (quaternion / scalar).
      * @tparam  Ty Quaternion element type.
@@ -187,14 +179,14 @@ namespace vtx {
      */
     template <arithmetic_t Ty, arithmetic_t U>
     constexpr quat_template<Ty> operator/( const quat_template<Ty>& quat , const U& scale ) noexcept {
-    	return quat_template<Ty>( 
+    	return quat_template<Ty>(
     		quat.w / scale ,
     		quat.x / scale ,
     		quat.y / scale ,
     		quat.z / scale
     	);
     }
-    
+
     /**
      * @brief   Quaternion addition compound assignment.
      * @param   quat1 Left-hand side quaternion (modified in-place).
@@ -205,11 +197,11 @@ namespace vtx {
     constexpr quat_template<Ty>& operator+=( quat_template<Ty>& quat1 , const quat_template<Ty>& quat2 ) noexcept {
     	quat1.w += quat2.w;
     	quat1.x += quat2.x;
-    	quat1.y += quat2.y; 
+    	quat1.y += quat2.y;
     	quat1.z += quat2.z;
     	return quat1;
     }
-    
+
     /**
      * @brief   Quaternion subtraction compound assignment.
      * @param   quat1 Left-hand side quaternion (modified in-place).
@@ -220,11 +212,11 @@ namespace vtx {
     constexpr quat_template<Ty>& operator-=( quat_template<Ty>& quat1 , const quat_template<Ty>& quat2 ) noexcept {
     	quat1.w -= quat2.w;
     	quat1.x -= quat2.x;
-    	quat1.y -= quat2.y; 
+    	quat1.y -= quat2.y;
     	quat1.z -= quat2.z;
     	return quat1;
     }
-    
+
     /**
      * @brief   Scalar multiplication compound assignment (quaternion *= scalar).
      * @tparam  Ty Quaternion element type.
@@ -237,11 +229,11 @@ namespace vtx {
     constexpr quat_template<Ty>& operator*=( quat_template<Ty>& quat , const U& scale ) noexcept {
     	quat.w *= scale;
     	quat.x *= scale;
-    	quat.y *= scale; 
+    	quat.y *= scale;
     	quat.z *= scale;
     	return quat;
     }
-    
+
     /**
      * @brief   Scalar division compound assignment (quaternion /= scalar).
      * @tparam  Ty Quaternion element type.
@@ -253,13 +245,13 @@ namespace vtx {
      */
     template <arithmetic_t Ty, arithmetic_t U>
     constexpr quat_template<Ty>& operator/=( quat_template<Ty>& quat , const U& scale ) noexcept {
-    	quat.w /= scale; 
-    	quat.x /= scale; 
-    	quat.y /= scale; 
+    	quat.w /= scale;
+    	quat.x /= scale;
+    	quat.y /= scale;
     	quat.z /= scale;
     	return quat;
     }
-    
+
     /**
      * @brief   Quaternion multiplication (Hamilton product).
      * @param   quat1 Left-hand side quaternion.
@@ -285,13 +277,13 @@ namespace vtx {
     		quat1.w * quat2.z + quat1.x * quat2.y - quat1.y * quat2.x + quat1.z * quat2.w
     	);
     }
-    
+
     /**
      * @brief   Quaternion multiplication compound assignment.
      * @param   quat1 Left-hand side quaternion (modified in-place).
      * @param   quat2 Right-hand side quaternion.
      * @return  Reference to quat1.
-     * 
+     *
      * @details
      * Performs: quat1 = quat1 * quat2
      * This composes rotations, applying quat2 first, then quat1.

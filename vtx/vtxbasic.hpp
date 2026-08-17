@@ -25,14 +25,14 @@
  * | SOFTWARE.                                                                     |
  * +-------------------------------------------------------------------------------+
  *
- * @file      vtxbasic.hpp
- * @author    SpectreFestival
- * @license   MIT
- * @brief     Core type aliases and utility macros for Vertex library.
+ * @file        vtxbasic.hpp
+ * @author      SpectreFestival
+ * @license     MIT
+ * @brief       Core type aliases and utility macros for Vertex library.
  *
- * @defgroup  vtx_basic Basic Types
- * @ingroup   vtx
- * @brief     Fundamental type definitions and compiler utilities.
+ * @defgroup    vtx_basic Basic Types
+ * @ingroup     vtx
+ * @brief       Fundamental type definitions and compiler utilities.
  *
  * @details
  * This header provides:
@@ -47,29 +47,12 @@
 #define VERTEX_BASIC_HPP
 #pragma once
 
-#include <cstdint>      ///< std::int8_t, std::uint32_t, etc.
-#include <type_traits>  ///< std::is_arithmetic_v
+#include <cstdint>
+#include <type_traits>
 
-/**
- * @def     VERTEX_DEBUG
- * @brief   Defined when NDEBUG is not set (Debug build).
- */
 #ifndef NDEBUG
 #define VERTEX_DEBUG
 #endif
-
-/**
- * @def     VERTEX_FORCEINLINE
- * @brief   Cross-platform forced inline hint.
- * @details
- * Expands to:
- * - MSVC:   __forceinline
- * - Intel:  __forceinline
- * - GCC:    __inline__ __attribute__((always_inline))
- * - Clang:  __inline__ __attribute__((always_inline))
- * - Intel:  __inline__ __attribute__((always_inline))
- * - Others: inline
- */
 #ifdef _MSC_VER
 #   define VERTEX_FORCEINLINE __forceinline
 #elif defined(__GNUC__)
@@ -89,20 +72,11 @@
 #else
 #       define VERTEX_FORCEINLINE inline
 #endif
-
-/**
- * @def     VERTEX_CONSTEXPR
- * @brief   Conditional constexpr.
- * @details
- * Expands to `constexpr` when C++20 or higher is detected
- * (__cplusplus >= 202302L), otherwise expands to nothing.
- */
 #if __cplusplus >= 202302L
 #   define VERTEX_CONSTEXPR constexpr
 #else
 #   define VERTEX_CONSTEXPR
 #endif
-
 #if defined(__clang__) || defined(__GNUC__) || defined(__INTEL_COMPILER)
 #	define VERTEX_RESTRICT __restrict__
 #elif defined(_MSC_VER)
@@ -116,67 +90,66 @@
 #endif
 
 #if defined(__GNUC__) || defined(__clang__)
-    #define VERTEX_SUPPORTS_TARGET_ATTRIBUTE 1
+#define VERTEX_SUPPORTS_TARGET_ATTRIBUTE 1
 
-    #define VERTEX_FUNCTION_OPTIMIZATION(...)  __attribute__((target(__VA_ARGS__)))
-    #define VERTEX_OPT_SSE4_NAME    "sse4.2"
-    #define VERTEX_OPT_AVX1_NAME    "avx"
-    #define VERTEX_OPT_AVX2_NAME    "avx2"
-    #define VERTEX_OPT_AVX5_NAME    "avx512f"
-    #define VERTEX_OPT_NEON_NAME    "neon"
-    #define VERTEX_OPT_MFMA_NAME    "avx2,fma"
+#define VERTEX_FUNCTION_OPTIMIZATION(...)  __attribute__((target(__VA_ARGS__)))
+#define VERTEX_OPT_SSE4_NAME    "sse4.2"
+#define VERTEX_OPT_AVX1_NAME    "avx"
+#define VERTEX_OPT_AVX2_NAME    "avx2"
+#define VERTEX_OPT_AVX5_NAME    "avx512f"
+#define VERTEX_OPT_NEON_NAME    "neon"
+#define VERTEX_OPT_MFMA_NAME    "avx2,fma"
 
-    #define VERTEX_OPT_SSE4 VERTEX_FUNCTION_OPTIMIZATION("sse4.2")
-    #define VERTEX_OPT_AVX1 VERTEX_FUNCTION_OPTIMIZATION("avx")
-    #define VERTEX_OPT_AVX2 VERTEX_FUNCTION_OPTIMIZATION("avx2")
-    #define VERTEX_OPT_AVX5 VERTEX_FUNCTION_OPTIMIZATION("avx512f")
-    #define VERTEX_OPT_NEON VERTEX_FUNCTION_OPTIMIZATION("neon")
+#define VERTEX_OPT_SSE4 VERTEX_FUNCTION_OPTIMIZATION("sse4.2")
+#define VERTEX_OPT_AVX1 VERTEX_FUNCTION_OPTIMIZATION("avx")
+#define VERTEX_OPT_AVX2 VERTEX_FUNCTION_OPTIMIZATION("avx2")
+#define VERTEX_OPT_AVX5 VERTEX_FUNCTION_OPTIMIZATION("avx512f")
+#define VERTEX_OPT_NEON VERTEX_FUNCTION_OPTIMIZATION("neon")
 
 #elif defined(_MSC_VER)
-    #define VERTEX_SUPPORTS_TARGET_ATTRIBUTE 0
-    #define VERTEX_FUNCTION_OPTIMIZATION(...)
-    #define VERTEX_OPT_SSE4_NAME
-    #define VERTEX_OPT_AVX1_NAME
-    #define VERTEX_OPT_AVX2_NAME
-    #define VERTEX_OPT_AVX5_NAME
-    #define VERTEX_OPT_NEON_NAME
-    #define VERTEX_OPT_MFMA_NAME
-    #define VERTEX_OPT_SSE4
-    #define VERTEX_OPT_AVX1
-    #define VERTEX_OPT_AVX2
-    #define VERTEX_OPT_AVX5
-    #define VERTEX_OPT_NEON
+#define VERTEX_SUPPORTS_TARGET_ATTRIBUTE 0
+#define VERTEX_FUNCTION_OPTIMIZATION(...)
+#define VERTEX_OPT_SSE4_NAME
+#define VERTEX_OPT_AVX1_NAME
+#define VERTEX_OPT_AVX2_NAME
+#define VERTEX_OPT_AVX5_NAME
+#define VERTEX_OPT_NEON_NAME
+#define VERTEX_OPT_MFMA_NAME
+#define VERTEX_OPT_SSE4
+#define VERTEX_OPT_AVX1
+#define VERTEX_OPT_AVX2
+#define VERTEX_OPT_AVX5
+#define VERTEX_OPT_NEON
 #else
-    #define VERTEX_SUPPORTS_TARGET_ATTRIBUTE 0
-    #define VERTEX_FUNCTION_OPTIMIZATION(...)
-    #define VERTEX_OPT_SSE4_NAME
-    #define VERTEX_OPT_AVX1_NAME
-    #define VERTEX_OPT_AVX2_NAME
-    #define VERTEX_OPT_AVX5_NAME
-    #define VERTEX_OPT_NEON_NAME
-    #define VERTEX_OPT_MFMA_NAME
-    #define VERTEX_OPT_SSE4
-    #define VERTEX_OPT_AVX1
-    #define VERTEX_OPT_AVX2
-    #define VERTEX_OPT_AVX5
-    #define VERTEX_OPT_NEON
+#define VERTEX_SUPPORTS_TARGET_ATTRIBUTE 0
+#define VERTEX_FUNCTION_OPTIMIZATION(...)
+#define VERTEX_OPT_SSE4_NAME
+#define VERTEX_OPT_AVX1_NAME
+#define VERTEX_OPT_AVX2_NAME
+#define VERTEX_OPT_AVX5_NAME
+#define VERTEX_OPT_NEON_NAME
+#define VERTEX_OPT_MFMA_NAME
+#define VERTEX_OPT_SSE4
+#define VERTEX_OPT_AVX1
+#define VERTEX_OPT_AVX2
+#define VERTEX_OPT_AVX5
+#define VERTEX_OPT_NEON
 #endif
 
 /**
- * @namespace   vtx
- * @brief       Root namespace for Vertex library.
- */
+* @namespace   vtx
+* @brief       Root namespace for Vertex library.
+*/
 namespace vtx {
 
     //+------------------------------------------------------------------------+
     //| Integer Types                                                          |
     //+------------------------------------------------------------------------+
 
-    using vi08 = std::int8_t;   ///< signed  8-bit integer
-    using vi16 = std::int16_t;  ///< signed 16-bit integer
-    using vi32 = std::int32_t;  ///< signed 32-bit integer
-    using vi64 = std::int64_t;  ///< signed 64-bit integer
-
+    using vi08 = std::int8_t;   ///<   signed  8-bit integer
+    using vi16 = std::int16_t;  ///<   signed 16-bit integer
+    using vi32 = std::int32_t;  ///<   signed 32-bit integer
+    using vi64 = std::int64_t;  ///<   signed 64-bit integer
     using vu08 = std::uint8_t;  ///< unsigned  8-bit integer
     using vu16 = std::uint16_t; ///< unsigned 16-bit integer
     using vu32 = std::uint32_t; ///< unsigned 32-bit integer

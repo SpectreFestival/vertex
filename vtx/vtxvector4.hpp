@@ -25,58 +25,34 @@
  * | SOFTWARE.                                                                     |
  * +-------------------------------------------------------------------------------+
  *
- * @file      vtxmat2x3.hpp
+ * @file      vtxvector4.hpp
  * @author    SpectreFestival
  * @license   MIT
- * @brief     2x3 matrix type aliases.
+ * @brief     4-dimensional vector type aliases.
  *
- * @defgroup  vtx_matrix Matrices
+ * @defgroup  vtx_vector Vectors
  * @ingroup   vtx
- * @brief     2x3 matrix aliases for all arithmetic types.
- *
- * @note      Matrix dimensions are (R rows, C columns) = (3 rows, 2 columns).
- *            The alias name "2x3" indicates the **logical** dimension (2 rows, 3 columns),
- *            but the template parameter order is matrix_template<Ty, R, C>.
- *            Therefore mat2x3 = matrix_template<Ty, 3, 2>.
+ * @brief     4D vector aliases for all arithmetic types.
  */
-
-#ifndef VERTEX_MATRIX2X3_HPP
-#define VERTEX_MATRIX2X3_HPP
+#ifndef VERTEX_VECTOR4_HPP
+#define VERTEX_VECTOR4_HPP
 #pragma once
-
-#include "vtxbasic.hpp"    ///< arithmetic_t, vi32, vf32, etc.
-#include "vtxmatcxr.hpp"   ///< matrix_template<T, R, C>
+#include "vtxvector.hpp"
 
 namespace vtx {
-
     template <arithmetic_t Ty>
-    using mat2x3 = matrix_template<Ty, 3, 2>;
+    using vec4 = vector_template<Ty , 4>;
 
-    //==========================================================================
-    // Type-specific 2x3 matrix aliases
-    //==========================================================================
+    using vec4i08 = vec4<vi08>;
+    using vec4i16 = vec4<vi16>;
+    using vec4i32 = vec4<vi32>;
+    using vec4i64 = vec4<vi64>;
+    using vec4u08 = vec4<vu08>;
+    using vec4u16 = vec4<vu16>;
+    using vec4u32 = vec4<vu32>;
+    using vec4u64 = vec4<vu64>;
+    using vec4f32 = vec4<vf32>;
+    using vec4f64 = vec4<vf64>;
+}
 
-    using mat2x3i08 = mat2x3<vi08>;  ///< 2x3 matrix of  signed 8-bit integers
-    using mat2x3i16 = mat2x3<vi16>;  ///< 2x3 matrix of signed 16-bit integers
-    using mat2x3i32 = mat2x3<vi32>;  ///< 2x3 matrix of signed 32-bit integers
-    using mat2x3i64 = mat2x3<vi64>;  ///< 2x3 matrix of signed 64-bit integers
-
-    using mat2x3u08 = mat2x3<vu08>;  ///< 2x3 matrix of  unsigned 8-bit integers
-    using mat2x3u16 = mat2x3<vu16>;  ///< 2x3 matrix of unsigned 16-bit integers
-    using mat2x3u32 = mat2x3<vu32>;  ///< 2x3 matrix of unsigned 32-bit integers
-    using mat2x3u64 = mat2x3<vu64>;  ///< 2x3 matrix of unsigned 64-bit integers
-
-    using mat2x3f32 = mat2x3<vf32>;  ///< 2x3 matrix of 32-bit floats
-    using mat2x3f64 = mat2x3<vf64>;  ///< 2x3 matrix of 64-bit floats
-
-    //==========================================================================
-    // Default convenience aliases
-    //==========================================================================
-
-    using mat2x3i = mat2x3i32;       ///< Default signed   2x3 matrix (32-bit)
-    using mat2x3u = mat2x3u32;       ///< Default unsigned 2x3 matrix (32-bit)
-    using mat2x3f = mat2x3f32;       ///< Default float    2x3 matrix (32-bit)
-    using mat2x3d = mat2x3f64;       ///< Default double   2x3 matrix (64-bit)
-} // namespace vtx
-
-#endif // VERTEX_MATRIX2X3_HPP
+#endif

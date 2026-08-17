@@ -25,53 +25,31 @@
  * | SOFTWARE.                                                                     |
  * +-------------------------------------------------------------------------------+
  *
- * @file      vtxvec2.hpp
+ * @file      vtxmatrix2x3.hpp
  * @author    SpectreFestival
  * @license   MIT
- * @brief     2-dimensional vector type aliases.
+ * @brief     2x3 matrix type aliases.
  *
- * @defgroup  vtx_vector Vectors
+ * @defgroup  vtx_matrix Matrices
  * @ingroup   vtx
- * @brief     2D vector aliases for all arithmetic types.
+ * @brief     2x3 matrix aliases for all arithmetic types.
  */
-
-#ifndef VERTEX_VECTOR2_HPP
-#define VERTEX_VECTOR2_HPP
+#ifndef VERTEX_MATRIX2X3_HPP
+#define VERTEX_MATRIX2X3_HPP
 #pragma once
-
-#include "vtxbasic.hpp"   ///< arithmetic_t, vi32, vf32, etc.
-#include "vtxvecx.hpp"    ///< vector_template<T, N>
+#include "vtxmatrix.hpp"
 
 namespace vtx {
-    
-    template <arithmetic_t Ty>
-    using vec2 = vector_template<Ty, 2>;
+    using mat2x3i08 = matrix_template<vi08 , 3 , 2>;
+    using mat2x3i16 = matrix_template<vi16 , 3 , 2>;
+    using mat2x3i32 = matrix_template<vi32 , 3 , 2>;
+    using mat2x3i64 = matrix_template<vi64 , 3 , 2>;
+    using mat2x3u08 = matrix_template<vu08 , 3 , 2>;
+    using mat2x3u16 = matrix_template<vu16 , 3 , 2>;
+    using mat2x3u32 = matrix_template<vu32 , 3 , 2>;
+    using mat2x3u64 = matrix_template<vu64 , 3 , 2>;
+    using mat2x3f32 = matrix_template<vf32 , 3 , 2>;
+    using mat2x3f64 = matrix_template<vf64 , 3 , 2>;
+}
 
-    //==========================================================================
-    // Type-specific 2D vector aliases
-    //==========================================================================
-
-    using vec2i08 = vec2<vi08>;  ///< 2D vector of signed  8-bit integers
-    using vec2i16 = vec2<vi16>;  ///< 2D vector of signed 16-bit integers
-    using vec2i32 = vec2<vi32>;  ///< 2D vector of signed 32-bit integers
-    using vec2i64 = vec2<vi64>;  ///< 2D vector of signed 64-bit integers
-
-    using vec2u08 = vec2<vu08>;  ///< 2D vector of unsigned  8-bit integers
-    using vec2u16 = vec2<vu16>;  ///< 2D vector of unsigned 16-bit integers
-    using vec2u32 = vec2<vu32>;  ///< 2D vector of unsigned 32-bit integers
-    using vec2u64 = vec2<vu64>;  ///< 2D vector of unsigned 64-bit integers
-
-    using vec2f32 = vec2<vf32>;  ///< 2D vector of 32-bit floats
-    using vec2f64 = vec2<vf64>;  ///< 2D vector of 64-bit floats
-
-    //==========================================================================
-    // Default convenience aliases
-    //==========================================================================
-
-    using vec2i  = vec2i32;      ///< Default signed   2D vector (32-bit)
-    using vec2u  = vec2u32;      ///< Default unsigned 2D vector (32-bit)
-    using vec2f  = vec2f32;      ///< Default float    2D vector (32-bit)
-    using vec2d  = vec2f64;      ///< Default double   2D vector (64-bit)
-} // namespace vtx
-
-#endif // VERTEX_VECTOR2_HPP
+#endif

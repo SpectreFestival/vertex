@@ -25,53 +25,31 @@
  * | SOFTWARE.                                                                     |
  * +-------------------------------------------------------------------------------+
  *
- * @file      vtxvec4.hpp
+ * @file      vtxmatrix2x4.hpp
  * @author    SpectreFestival
  * @license   MIT
- * @brief     4-dimensional vector type aliases.
+ * @brief     2x4 matrix type aliases.
  *
- * @defgroup  vtx_vector Vectors
+ * @defgroup  vtx_matrix Matrices
  * @ingroup   vtx
- * @brief     4D vector aliases for all arithmetic types.
+ * @brief     2x4 matrix aliases for all arithmetic types.
  */
-
-#ifndef VERTEX_VECTOR4_HPP
-#define VERTEX_VECTOR4_HPP
+#ifndef VERTEX_MATRIX2X4_HPP
+#define VERTEX_MATRIX2X4_HPP
 #pragma once
-
-#include "vtxbasic.hpp"   ///< arithmetic_t, vi32, vf32, etc.
-#include "vtxvecx.hpp"    ///< vector_template<T, N>
+#include "vtxmatrix.hpp"
 
 namespace vtx {
+    using mat2x4i08 = matrix_template<vi08 , 4 , 2>;
+    using mat2x4i16 = matrix_template<vi16 , 4 , 2>;
+    using mat2x4i32 = matrix_template<vi32 , 4 , 2>;
+    using mat2x4i64 = matrix_template<vi64 , 4 , 2>;
+    using mat2x4u08 = matrix_template<vu08 , 4 , 2>;
+    using mat2x4u16 = matrix_template<vu16 , 4 , 2>;
+    using mat2x4u32 = matrix_template<vu32 , 4 , 2>;
+    using mat2x4u64 = matrix_template<vu64 , 4 , 2>;
+    using mat2x4f32 = matrix_template<vf32 , 4 , 2>;
+    using mat2x4f64 = matrix_template<vf64 , 4 , 2>;
+}
 
-    template <arithmetic_t Ty>
-    using vec4 = vector_template<Ty, 4>;
-
-    //==========================================================================
-    // Type-specific 4D vector aliases
-    //==========================================================================
-
-    using vec4i08 = vec4<vi08>;  ///< 4D vector of signed  8-bit integers
-    using vec4i16 = vec4<vi16>;  ///< 4D vector of signed 16-bit integers
-    using vec4i32 = vec4<vi32>;  ///< 4D vector of signed 32-bit integers
-    using vec4i64 = vec4<vi64>;  ///< 4D vector of signed 64-bit integers
-
-    using vec4u08 = vec4<vu08>;  ///< 4D vector of unsigned  8-bit integers
-    using vec4u16 = vec4<vu16>;  ///< 4D vector of unsigned 16-bit integers
-    using vec4u32 = vec4<vu32>;  ///< 4D vector of unsigned 32-bit integers
-    using vec4u64 = vec4<vu64>;  ///< 4D vector of unsigned 64-bit integers
-
-    using vec4f32 = vec4<vf32>;  ///< 4D vector of 32-bit floats
-    using vec4f64 = vec4<vf64>;  ///< 4D vector of 64-bit floats
-
-    //==========================================================================
-    // Default convenience aliases
-    //==========================================================================
-
-    using vec4i = vec4i32;       ///< Default signed   4D vector (32-bit)
-    using vec4u = vec4u32;       ///< Default unsigned 4D vector (32-bit)
-    using vec4f = vec4f32;       ///< Default float    4D vector (32-bit)
-    using vec4d = vec4f64;       ///< Default double   4D vector (64-bit)
-} // namespace vtx
-
-#endif // VERTEX_VECTOR4_HPP
+#endif

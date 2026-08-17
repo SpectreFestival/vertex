@@ -1,4 +1,3 @@
-
 /**
  * +-------------------------------------------------------------------------------+
  * | MIT License                                                                   |
@@ -25,49 +24,78 @@
  * | OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE |
  * | SOFTWARE.                                                                     |
  * +-------------------------------------------------------------------------------+
+ * 
+ * @file        vtxsimd2.hpp
+ * @author      SpectreFestival
+ * @license     MIT
+ * @brief       SIMD AVX2 optimizations for Vertex library operations.
  */
 
 #ifndef VERTEX_SIMD2_HPP
 #define VERTEX_SIMD2_HPP
 #pragma once
 
-#include "vtxvecx.hpp"       ///< vector_template<T, N>
-#include "vtxvec2.hpp"       ///< vec2<T>
-#include "vtxvec3.hpp"       ///< vec3<T>
-#include "vtxvec4.hpp"       ///< vec4<T>
-
-#include "vtxmatcxr.hpp"     ///< matrix_template<T, R, C>
-#include "vtxmat2x2.hpp"     ///< mat2x2<T>
-#include "vtxmat2x3.hpp"     ///< mat2x3<T>
-#include "vtxmat2x4.hpp"     ///< mat2x4<T>
-#include "vtxmat3x2.hpp"     ///< mat3x2<T>
-#include "vtxmat3x3.hpp"     ///< mat3x3<T>
-#include "vtxmat3x4.hpp"     ///< mat3x4<T>
-#include "vtxmat4x2.hpp"     ///< mat4x2<T>
-#include "vtxmat4x3.hpp"     ///< mat4x3<T>
-#include "vtxmat4x4.hpp"     ///< mat4x4<T>
-
-#include <immintrin.h>       ///< AVX2 intrinsics
-#include <thread>
-
-#ifdef VERTEX_ENABLE_MTHREAD
-#include <thread>
-#endif
-
-#include "vtxtuple.hpp"
+#include "vtxvector.hpp" ///< vtx::vector_template<Ty , R , C>
+#include "vtxmatrix.hpp" ///< vtx::matrix_template<Ty , N>
+#include <immintrin.h> 
 
 namespace vtx {
     /**
      * @brief       Internal SIMD implementation tmpZails.
-     * @namespace   impl
+     * @namespace   _impl
      */
-    namespace impl {
+    namespace _impl {
+
+        /**
+        * @brief   Expands a single 128-bit SIMD vector into a 256-bit vector by broadcasting its content.
+        *
+        *          This function takes an SSE __m128 register and converts it to an AVX __m256 register
+        *          where both 128-bit lanes contain the same data from the original vector.
+        *
+        * @param   v The input 128-bit packed single-precision float vector.
+        * @return  __m256 A 256-bit vector with the lower and upper lanes both equal to the input @p v.
+        *
+        * @note    Uses `_mm256_castps128_ps256` to zero-extend the upper lane, then `_mm256_permute2f128_ps`
+        *          with the permute control `0x00` to copy the lower lane into the upper lane.
+        *          This results in full duplication of the original data across both lanes.
+        *
+        * @warning This function is intended for use in AVX2-optimized contexts.
+        *          The macro @ref VERTEX_FUNCTION_OPTIMIZATION and @ref VERTEX_OPT_AVX2_NAME
+        *          indicate that this code is conditionally compiled under AVX2 code paths.
+        */
         VERTEX_FUNCTION_OPTIMIZATION( VERTEX_OPT_AVX2_NAME )
         inline auto expand_mm128( const __m128& v ) noexcept {
             auto tmpV = _mm256_castps128_ps256( v );
             return _mm256_permute2f128_ps( tmpV, tmpV, 0x00 );
         }
 
+        /**
+         * @brief       Computes a fused multiply-add expression over three groups of packed single-precision vectors.
+         *
+         * The computation is structured to maximize instruction-level parallelism by using FMA for both
+         * the outer and inner terms, reducing rounding error compared to separate multiply and add.
+         *
+         * @param       v1 First  multiplicand of the innermost product group (v1 * v2 * v3)
+         * @param       v2 Second multiplicand of the innermost product group
+         * @param       v3 Third  multiplicand of the innermost product group
+         * @param       v4 First  multiplicand of the    middle product group (v4 * v5 * v6)
+         * @param       v5 Second multiplicand of the    middle product group
+         * @param       v6 Third  multiplicand of the    middle product group
+         * @param       v7 First  multiplicand of the outermost product group (v7 * v8 * v9)
+         * @param       v8 Second multiplicand of the outermost product group
+         * @param       v9 Third  multiplicand of the outermost product group
+         *
+         * @return      __m128 The computed result as a 128-bit packed single-precision vector.
+         *
+         * @note        This function is intended for use in Matrix Fused Multiply-Add (MFMA) optimized contexts.
+         *              The macro @ref VERTEX_FUNCTION_OPTIMIZATION and @ref VERTEX_OPT_MFMA_NAME indicate that
+         *              this code is conditionally compiled under MFMA code paths (e.g., AMD CDNA architectures).
+         *
+         * @attention   All input vectors must contain valid single-precision floating-point data.
+         *              Performance is optimal when using aligned 16-byte memory operands.
+         *
+         * @see         _mm_fmadd_ps, _mm_mul_ps
+         */
         VERTEX_FUNCTION_OPTIMIZATION( VERTEX_OPT_MFMA_NAME )
         inline auto compute_temp(
             const __m128& v1 , const __m128& v2 , const __m128& v3 ,
@@ -75,9 +103,9 @@ namespace vtx {
             const __m128& v7 , const __m128& v8 , const __m128& v9
         ) noexcept {
             return
-                _mm_fmadd_ps( _mm_mul_ps( v7 , v8 ) , v9 ,
-                _mm_fmadd_ps( _mm_mul_ps( v4 , v5 ) , v6 ,
-                  _mm_mul_ps( _mm_mul_ps( v1 , v2 ) , v3 ) ) );
+            _mm_fmadd_ps( _mm_mul_ps( v7 , v8 ) , v9 ,
+            _mm_fmadd_ps( _mm_mul_ps( v4 , v5 ) , v6 ,
+            _mm_mul_ps(   _mm_mul_ps( v1 , v2 ) , v3 ) ) );
         }
 
         VERTEX_FUNCTION_OPTIMIZATION( VERTEX_OPT_MFMA_NAME )
@@ -87,9 +115,9 @@ namespace vtx {
             const __m256& v7 , const __m256& v8 , const __m256& v9
         ) noexcept {
             return
-                _mm256_fmadd_ps( _mm256_mul_ps( v7 , v8 ) , v9 ,
-                _mm256_fmadd_ps( _mm256_mul_ps( v4 , v5 ) , v6 ,
-                  _mm256_mul_ps( _mm256_mul_ps( v1 , v2 ) , v3 ) ) );
+            _mm256_fmadd_ps( _mm256_mul_ps( v7 , v8 ) , v9 ,
+            _mm256_fmadd_ps( _mm256_mul_ps( v4 , v5 ) , v6 ,
+            _mm256_mul_ps(   _mm256_mul_ps( v1 , v2 ) , v3 ) ) );
         }
 
         VERTEX_FUNCTION_OPTIMIZATION( VERTEX_OPT_MFMA_NAME )
@@ -99,16 +127,16 @@ namespace vtx {
             const __m256d& v7 , const __m256d& v8 , const __m256d& v9
         ) noexcept {
             return
-                _mm256_fmadd_pd( _mm256_mul_pd( v7 , v8 ) , v9 ,
-                _mm256_fmadd_pd( _mm256_mul_pd( v4 , v5 ) , v6 ,
-                  _mm256_mul_pd( _mm256_mul_pd( v1 , v2 ) , v3 ) ) );
+            _mm256_fmadd_pd( _mm256_mul_pd( v7 , v8 ) , v9 ,
+            _mm256_fmadd_pd( _mm256_mul_pd( v4 , v5 ) , v6 ,
+            _mm256_mul_pd(   _mm256_mul_pd( v1 , v2 ) , v3 ) ) );
         }
 
         VERTEX_FUNCTION_OPTIMIZATION( VERTEX_OPT_AVX2_NAME )
-        inline vf32 compute_sum( __m128 v ) noexcept {
-            v = _mm_hadd_ps( v , v );
-            v = _mm_hadd_ps( v , v );
-            return _mm_cvtss_f32( v );
+        inline vf32 compute_sum( __m128 tmpV ) noexcept {
+            tmpV = _mm_hadd_ps ( tmpV , tmpV );
+            tmpV = _mm_hadd_ps ( tmpV , tmpV );
+            return _mm_cvtss_f32( tmpV );
         }
 
         VERTEX_FUNCTION_OPTIMIZATION( VERTEX_OPT_AVX2_NAME )
@@ -132,7 +160,7 @@ namespace vtx {
     }
 
     VERTEX_FUNCTION_OPTIMIZATION( VERTEX_OPT_AVX2_NAME )
-    inline auto operator*( const mat4x4f32 & a , const mat4x4f32 & b ) noexcept {
+    inline auto operator*( const matrix_template<vf32 , 4 , 4>& a , const matrix_template<vf32 , 4 , 4>& b ) noexcept {
         auto tmpA0 = _mm_load_ps( &a.data [ 0 ][ 0 ] + 0x00 );
         auto tmpA1 = _mm_load_ps( &a.data [ 0 ][ 0 ] + 0x04 );
         auto tmpA2 = _mm_load_ps( &a.data [ 0 ][ 0 ] + 0x08 );
@@ -143,10 +171,10 @@ namespace vtx {
 
         _MM_TRANSPOSE4_PS( tmpA0 , tmpA1 , tmpA2 , tmpA3 );
 
-        auto tmpA00 = impl::expand_mm128( tmpA0 );
-        auto tmpA11 = impl::expand_mm128( tmpA1 );
-        auto tmpA22 = impl::expand_mm128( tmpA2 );
-        auto tmpA33 = impl::expand_mm128( tmpA3 );
+        auto tmpA00 = _impl::expand_mm128( tmpA0 );
+        auto tmpA11 = _impl::expand_mm128( tmpA1 );
+        auto tmpA22 = _impl::expand_mm128( tmpA2 );
+        auto tmpA33 = _impl::expand_mm128( tmpA3 );
 
         auto tmp0 = _mm256_mul_ps( tmpA00 , tmpB01 );
         auto tmp1 = _mm256_mul_ps( tmpA00 , tmpB23 );
@@ -174,7 +202,7 @@ namespace vtx {
         tmp7 = _mm256_hadd_ps( tmp7 , tmp7 );
         tmp7 = _mm256_hadd_ps( tmp7 , tmp7 );
 
-        mat4x4f32 result {};
+        matrix_template<vf32 , 4 , 4> result {};
 
         result.data [ 0 ][ 0 ] = _mm_cvtss_f32( _mm256_castps256_ps128( tmp0 ) );
         result.data [ 2 ][ 0 ] = _mm_cvtss_f32( _mm256_castps256_ps128( tmp1 ) );
@@ -198,7 +226,7 @@ namespace vtx {
     }
 
     VERTEX_FUNCTION_OPTIMIZATION( VERTEX_OPT_AVX2_NAME )
-    inline auto operator*( const mat4x4i32& a , const mat4x4i32& b ) noexcept {
+    inline auto operator*( const matrix_template<vi32 , 4 , 4>& a , const matrix_template<vi32 , 4 , 4>& b ) noexcept {
         auto tmpB01 = _mm256_load_si256( reinterpret_cast< const __m256i* >( &b.data [ 0 ][ 0 ] + 0x00 ) );
         auto tmpB23 = _mm256_load_si256( reinterpret_cast< const __m256i* >( &b.data [ 0 ][ 0 ] + 0x08 ) );
 
@@ -248,20 +276,20 @@ namespace vtx {
         tmp7 = _mm256_hadd_epi32( tmp7 , tmp7 );
         tmp7 = _mm256_hadd_epi32( tmp7 , tmp7 );
 
-        mat4x4i32 result {};
+        matrix_template<vi32 , 4 , 4> result {};
 
         result.data [ 0 ][ 0 ] = _mm_cvtsi128_si32( _mm256_castsi256_si128( tmp0 ) );
-        result.data [ 1 ][ 0 ] = _mm_cvtsi128_si32( _mm256_castsi256_si128( tmp2 ) );
+        result.data [ 0 ][ 1 ] = _mm_cvtsi128_si32( _mm256_castsi256_si128( tmp2 ) );
         result.data [ 2 ][ 0 ] = _mm_cvtsi128_si32( _mm256_castsi256_si128( tmp1 ) );
-        result.data [ 3 ][ 0 ] = _mm_cvtsi128_si32( _mm256_castsi256_si128( tmp3 ) );
+        result.data [ 2 ][ 1 ] = _mm_cvtsi128_si32( _mm256_castsi256_si128( tmp3 ) );
         result.data [ 0 ][ 2 ] = _mm_cvtsi128_si32( _mm256_castsi256_si128( tmp4 ) );
         result.data [ 0 ][ 3 ] = _mm_cvtsi128_si32( _mm256_castsi256_si128( tmp6 ) );
         result.data [ 2 ][ 2 ] = _mm_cvtsi128_si32( _mm256_castsi256_si128( tmp5 ) );
         result.data [ 2 ][ 3 ] = _mm_cvtsi128_si32( _mm256_castsi256_si128( tmp7 ) );
 
-        result.data [ 0 ][ 1 ] = _mm_cvtsi128_si32( _mm256_extracti128_si256( tmp0 , 1 ) );
+        result.data [ 1 ][ 0 ] = _mm_cvtsi128_si32( _mm256_extracti128_si256( tmp0 , 1 ) );
         result.data [ 1 ][ 1 ] = _mm_cvtsi128_si32( _mm256_extracti128_si256( tmp2 , 1 ) );
-        result.data [ 2 ][ 1 ] = _mm_cvtsi128_si32( _mm256_extracti128_si256( tmp1 , 1 ) );
+        result.data [ 3 ][ 0 ] = _mm_cvtsi128_si32( _mm256_extracti128_si256( tmp1 , 1 ) );
         result.data [ 3 ][ 1 ] = _mm_cvtsi128_si32( _mm256_extracti128_si256( tmp3 , 1 ) );
         result.data [ 1 ][ 2 ] = _mm_cvtsi128_si32( _mm256_extracti128_si256( tmp4 , 1 ) );
         result.data [ 1 ][ 3 ] = _mm_cvtsi128_si32( _mm256_extracti128_si256( tmp6 , 1 ) );
@@ -271,130 +299,8 @@ namespace vtx {
         return result;
     }
 
-    [[deprecated("Negative performance impact: excessive thread launch latency. Prefer single-threaded version.")]]
     VERTEX_FUNCTION_OPTIMIZATION( VERTEX_OPT_AVX2_NAME )
-    inline auto inverse_mthread( const mat4x4f32& mat ) noexcept -> mat4x4f32 {
-        auto tmp00 = __m128{};
-        auto tmp01 = __m128{};
-        auto tmp02 = __m128{};
-        auto tmp03 = __m128{};
-        auto tmp04 = __m128{};
-        auto tmp05 = __m128{};
-        auto tmp06 = __m128{};
-        auto tmp07 = __m128{};
-        auto tmp08 = __m128{};
-        auto tmp09 = __m128{};
-        auto tmp10 = __m128{};
-        auto tmp11 = __m128{};
-
-        std::atomic<int> syncFlag { 0 };
-        auto shuffleIndex = _mm_set_epi32( 3 , 1 , 2 , 0 );
-        __m128 scale = _mm_setzero_ps( );
-        std::atomic<bool> scaleReady { false };
-        mat4x4f32 result;
-
-        std::jthread threadA( [ & ] VERTEX_FUNCTION_OPTIMIZATION( VERTEX_OPT_AVX2_NAME ) {
-            tmp00 = _mm_set_ps( mat.data [ 2 ][ 1 ] , mat.data [ 3 ][ 1 ] , mat.data [ 0 ][ 1 ] , mat.data [ 1 ][ 1 ] );
-            tmp01 = _mm_set_ps( mat.data [ 1 ][ 2 ] , mat.data [ 2 ][ 2 ] , mat.data [ 1 ][ 2 ] , mat.data [ 2 ][ 2 ] );
-            tmp02 = _mm_set_ps( mat.data [ 0 ][ 3 ] , mat.data [ 0 ][ 3 ] , mat.data [ 3 ][ 3 ] , mat.data [ 3 ][ 3 ] );
-
-            syncFlag.fetch_add( 1 , std::memory_order_release );
-            while ( syncFlag.load( std::memory_order_acquire ) != 4 ) {
-                std::this_thread::yield( );
-            }
-
-            auto tmpA = _mm_sub_ps(
-                impl::compute_temp( tmp00 , tmp01 , tmp02 , tmp03 , tmp04 , tmp05 , tmp06 , tmp07 , tmp08 ) ,
-                impl::compute_temp( tmp06 , tmp01 , tmp05 , tmp03 , tmp07 , tmp02 , tmp00 , tmp04 , tmp08 ) );
-            tmpA = _mm_permutevar_ps( tmpA , shuffleIndex );
-
-            auto tmpE = _mm_set_ps( mat.data [ 3 ][ 0 ] , mat.data [ 2 ][ 0 ] , mat.data [ 1 ][ 0 ] , mat.data [ 0 ][ 0 ] );
-            auto tmpF = _mm_mul_ps( tmpE , tmpA );
-            auto det = impl::compute_sum( tmpF );
-            scale = _mm_set1_ps( 1.f / det );
-            scaleReady.store( true , std::memory_order_release );
-
-            tmpA = _mm_mul_ps( tmpA , scale );
-            _mm_store_ps( &result.data [ 0 ][ 0 ] + 0x00 , tmpA );
-        } );
-
-        std::jthread threadB( [ & ] VERTEX_FUNCTION_OPTIMIZATION( VERTEX_OPT_AVX2_NAME ) {
-            tmp03 = _mm_set_ps( mat.data [ 1 ][ 1 ] , mat.data [ 2 ][ 1 ] , mat.data [ 1 ][ 1 ] , mat.data [ 2 ][ 1 ] );
-            tmp04 = _mm_set_ps( mat.data [ 0 ][ 2 ] , mat.data [ 0 ][ 2 ] , mat.data [ 3 ][ 2 ] , mat.data [ 3 ][ 2 ] );
-            tmp05 = _mm_set_ps( mat.data [ 2 ][ 3 ] , mat.data [ 3 ][ 3 ] , mat.data [ 0 ][ 3 ] , mat.data [ 1 ][ 3 ] );
-
-            syncFlag.fetch_add( 1 , std::memory_order_release );
-            while ( syncFlag.load( std::memory_order_acquire ) != 4 ) {
-                std::this_thread::yield( );
-            }
-
-            auto tmpB = _mm_sub_ps(
-                impl::compute_temp( tmp09 , tmp01 , tmp05 , tmp10 , tmp07 , tmp02 , tmp11 , tmp04 , tmp08 ) ,
-                impl::compute_temp( tmp11 , tmp01 , tmp02 , tmp10 , tmp04 , tmp05 , tmp09 , tmp07 , tmp08 )
-            );
-            tmpB = _mm_permutevar_ps( tmpB , shuffleIndex );
-
-            while ( !scaleReady.load( std::memory_order_acquire ) ) {
-                std::this_thread::yield( );
-            }
-
-            tmpB = _mm_mul_ps( tmpB , scale );
-            _mm_store_ps( &result.data [ 0 ][ 0 ] + 0x04 , tmpB );
-        } );
-
-        std::jthread threadC( [ & ] VERTEX_FUNCTION_OPTIMIZATION( VERTEX_OPT_AVX2_NAME ) {
-            tmp06 = _mm_set_ps( mat.data [ 0 ][ 1 ] , mat.data [ 0 ][ 1 ] , mat.data [ 3 ][ 1 ] , mat.data [ 3 ][ 1 ] );
-            tmp07 = _mm_set_ps( mat.data [ 2 ][ 2 ] , mat.data [ 3 ][ 2 ] , mat.data [ 0 ][ 2 ] , mat.data [ 1 ][ 2 ] );
-            tmp08 = _mm_set_ps( mat.data [ 1 ][ 3 ] , mat.data [ 2 ][ 3 ] , mat.data [ 1 ][ 3 ] , mat.data [ 2 ][ 3 ] );
-
-            syncFlag.fetch_add( 1 , std::memory_order_release );
-            while ( syncFlag.load( std::memory_order_acquire ) != 4 ) {
-                std::this_thread::yield( );
-            }
-
-            auto tmpC = _mm_sub_ps(
-                impl::compute_temp( tmp11 , tmp03 , tmp02 , tmp10 , tmp06 , tmp05 , tmp09 , tmp00 , tmp08 ) ,
-                impl::compute_temp( tmp09 , tmp03 , tmp05 , tmp10 , tmp00 , tmp02 , tmp11 , tmp06 , tmp08 )
-            );
-            tmpC = _mm_permutevar_ps( tmpC , shuffleIndex );
-
-            while ( !scaleReady.load( std::memory_order_acquire ) ) {
-                std::this_thread::yield( );
-            }
-
-            tmpC = _mm_mul_ps( tmpC , scale );
-            _mm_store_ps( &result.data [ 0 ][ 0 ] + 0x08 , tmpC );
-        } );
-
-        std::jthread threadD( [ & ] VERTEX_FUNCTION_OPTIMIZATION( VERTEX_OPT_AVX2_NAME ) {
-            tmp09 = _mm_set_ps( mat.data [ 0 ][ 0 ] , mat.data [ 0 ][ 0 ] , mat.data [ 3 ][ 0 ] , mat.data [ 3 ][ 0 ] );
-            tmp10 = _mm_set_ps( mat.data [ 1 ][ 0 ] , mat.data [ 2 ][ 0 ] , mat.data [ 1 ][ 0 ] , mat.data [ 2 ][ 0 ] );
-            tmp11 = _mm_set_ps( mat.data [ 2 ][ 0 ] , mat.data [ 3 ][ 0 ] , mat.data [ 0 ][ 0 ] , mat.data [ 1 ][ 0 ] );
-
-            syncFlag.fetch_add( 1 , std::memory_order_release );
-            while ( syncFlag.load( std::memory_order_acquire ) != 4 ) {
-                std::this_thread::yield( );
-            }
-
-            auto tmpD = _mm_sub_ps(
-                impl::compute_temp( tmp09 , tmp03 , tmp07 , tmp10 , tmp00 , tmp04 , tmp11 , tmp06 , tmp01 ) ,
-                impl::compute_temp( tmp11 , tmp03 , tmp04 , tmp10 , tmp06 , tmp07 , tmp09 , tmp00 , tmp01 )
-            );
-            tmpD = _mm_permutevar_ps( tmpD , shuffleIndex );
-
-            while ( !scaleReady.load( std::memory_order_acquire ) ) {
-                std::this_thread::yield( );
-            }
-
-            tmpD = _mm_mul_ps( tmpD , scale );
-            _mm_store_ps( &result.data [ 0 ][ 0 ] + 0x0C , tmpD );
-        } );
-
-        return result;
-    }
-
-    VERTEX_FUNCTION_OPTIMIZATION( VERTEX_OPT_AVX2_NAME )
-    inline auto inverse( const mat4x4f32& mat ) noexcept -> mat4x4f32 {
+    inline auto inverse( const matrix_template<vf32 , 4 , 4>& mat ) noexcept {
         auto tmp00 = _mm_set_ps( mat.data[ 2 ][ 1 ] , mat.data[ 3 ][ 1 ] , mat.data[ 0 ][ 1 ] , mat.data[ 1 ][ 1 ] );
         auto tmp01 = _mm_set_ps( mat.data[ 1 ][ 2 ] , mat.data[ 2 ][ 2 ] , mat.data[ 1 ][ 2 ] , mat.data[ 2 ][ 2 ] );
         auto tmp02 = _mm_set_ps( mat.data[ 0 ][ 3 ] , mat.data[ 0 ][ 3 ] , mat.data[ 3 ][ 3 ] , mat.data[ 3 ][ 3 ] );
@@ -408,14 +314,14 @@ namespace vtx {
         auto tmp10 = _mm_set_ps( mat.data[ 1 ][ 0 ] , mat.data[ 2 ][ 0 ] , mat.data[ 1 ][ 0 ] , mat.data[ 2 ][ 0 ] );
         auto tmp11 = _mm_set_ps( mat.data[ 2 ][ 0 ] , mat.data[ 3 ][ 0 ] , mat.data[ 0 ][ 0 ] , mat.data[ 1 ][ 0 ] );
 
-        auto tmpA = _mm_sub_ps( impl::compute_temp( tmp00 , tmp01 , tmp02 , tmp03 , tmp04 , tmp05 , tmp06 , tmp07 , tmp08 ) ,
-                                impl::compute_temp( tmp06 , tmp01 , tmp05 , tmp03 , tmp07 , tmp02 , tmp00 , tmp04 , tmp08 ) );
-        auto tmpB = _mm_sub_ps( impl::compute_temp( tmp09 , tmp01 , tmp05 , tmp10 , tmp07 , tmp02 , tmp11 , tmp04 , tmp08 ) ,
-                                impl::compute_temp( tmp11 , tmp01 , tmp02 , tmp10 , tmp04 , tmp05 , tmp09 , tmp07 , tmp08 ) );
-        auto tmpC = _mm_sub_ps( impl::compute_temp( tmp11 , tmp03 , tmp02 , tmp10 , tmp06 , tmp05 , tmp09 , tmp00 , tmp08 ) ,
-                                impl::compute_temp( tmp09 , tmp03 , tmp05 , tmp10 , tmp00 , tmp02 , tmp11 , tmp06 , tmp08 ) );
-        auto tmpD = _mm_sub_ps( impl::compute_temp( tmp09 , tmp03 , tmp07 , tmp10 , tmp00 , tmp04 , tmp11 , tmp06 , tmp01 ) ,
-                                impl::compute_temp( tmp11 , tmp03 , tmp04 , tmp10 , tmp06 , tmp07 , tmp09 , tmp00 , tmp01 ) );
+        auto tmpA = _mm_sub_ps( _impl::compute_temp( tmp00 , tmp01 , tmp02 , tmp03 , tmp04 , tmp05 , tmp06 , tmp07 , tmp08 ) ,
+                                _impl::compute_temp( tmp06 , tmp01 , tmp05 , tmp03 , tmp07 , tmp02 , tmp00 , tmp04 , tmp08 ) );
+        auto tmpB = _mm_sub_ps( _impl::compute_temp( tmp09 , tmp01 , tmp05 , tmp10 , tmp07 , tmp02 , tmp11 , tmp04 , tmp08 ) ,
+                                _impl::compute_temp( tmp11 , tmp01 , tmp02 , tmp10 , tmp04 , tmp05 , tmp09 , tmp07 , tmp08 ) );
+        auto tmpC = _mm_sub_ps( _impl::compute_temp( tmp11 , tmp03 , tmp02 , tmp10 , tmp06 , tmp05 , tmp09 , tmp00 , tmp08 ) ,
+                                _impl::compute_temp( tmp09 , tmp03 , tmp05 , tmp10 , tmp00 , tmp02 , tmp11 , tmp06 , tmp08 ) );
+        auto tmpD = _mm_sub_ps( _impl::compute_temp( tmp09 , tmp03 , tmp07 , tmp10 , tmp00 , tmp04 , tmp11 , tmp06 , tmp01 ) ,
+                                _impl::compute_temp( tmp11 , tmp03 , tmp04 , tmp10 , tmp06 , tmp07 , tmp09 , tmp00 , tmp01 ) );
 
         auto shuffle_index = _mm_set_epi32( 3 , 1 , 2 , 0 );
 
@@ -427,7 +333,7 @@ namespace vtx {
         auto tmpE = _mm_set_ps( mat.data[ 3 ][ 0 ] , mat.data[ 2 ][ 0 ] , mat.data[ 1 ][ 0 ] , mat.data[ 0 ][ 0 ] );
         auto tmpF = _mm_mul_ps( tmpE , tmpA );
 
-        auto det  = impl::compute_sum( tmpF );
+        auto det  = _impl::compute_sum( tmpF );
         auto scale = _mm_set1_ps( 1.f / det );
 
         tmpA = _mm_mul_ps( tmpA , scale );
@@ -435,7 +341,7 @@ namespace vtx {
         tmpC = _mm_mul_ps( tmpC , scale );
         tmpD = _mm_mul_ps( tmpD , scale );
 
-        mat4x4f32 result;
+        matrix_template<vf32 , 4 , 4> result;
 
         _mm_store_ps( &result.data[ 0 ][ 0 ] + 0x00 , tmpA );
         _mm_store_ps( &result.data[ 0 ][ 0 ] + 0x04 , tmpB );
@@ -478,7 +384,7 @@ namespace vtx {
      * +------------------------------------------------------------------------------------------------------------------+
      */
     VERTEX_FUNCTION_OPTIMIZATION( VERTEX_OPT_AVX2_NAME )
-    inline auto inverse( const mat4x4f64& mat ) noexcept {
+    inline auto inverse( const matrix_template<vf64 , 4 , 4>& mat ) noexcept {
         auto tmp00 = _mm256_set_pd( mat.data[ 2 ][ 1 ] , mat.data[ 3 ][ 1 ] , mat.data[ 0 ][ 1 ] , mat.data[ 1 ][ 1 ] );
         auto tmp01 = _mm256_set_pd( mat.data[ 1 ][ 2 ] , mat.data[ 2 ][ 2 ] , mat.data[ 1 ][ 2 ] , mat.data[ 2 ][ 2 ] );
         auto tmp02 = _mm256_set_pd( mat.data[ 0 ][ 3 ] , mat.data[ 0 ][ 3 ] , mat.data[ 3 ][ 3 ] , mat.data[ 3 ][ 3 ] );
@@ -492,14 +398,14 @@ namespace vtx {
         auto tmp10 = _mm256_set_pd( mat.data[ 1 ][ 0 ] , mat.data[ 2 ][ 0 ] , mat.data[ 1 ][ 0 ] , mat.data[ 2 ][ 0 ] );
         auto tmp11 = _mm256_set_pd( mat.data[ 2 ][ 0 ] , mat.data[ 3 ][ 0 ] , mat.data[ 0 ][ 0 ] , mat.data[ 1 ][ 0 ] );
 
-        auto tmpA = _mm256_sub_pd( impl::compute_temp( tmp00 , tmp01 , tmp02 , tmp03 , tmp04 , tmp05 , tmp06 , tmp07 , tmp08 ) ,
-                                   impl::compute_temp( tmp06 , tmp01 , tmp05 , tmp03 , tmp07 , tmp02 , tmp00 , tmp04 , tmp08 ) );
-        auto tmpB = _mm256_sub_pd( impl::compute_temp( tmp09 , tmp01 , tmp05 , tmp10 , tmp07 , tmp02 , tmp11 , tmp04 , tmp08 ) ,
-                                   impl::compute_temp( tmp11 , tmp01 , tmp02 , tmp10 , tmp04 , tmp05 , tmp09 , tmp07 , tmp08 ) );
-        auto tmpC = _mm256_sub_pd( impl::compute_temp( tmp11 , tmp03 , tmp02 , tmp10 , tmp06 , tmp05 , tmp09 , tmp00 , tmp08 ) ,
-                                   impl::compute_temp( tmp09 , tmp03 , tmp05 , tmp10 , tmp00 , tmp02 , tmp11 , tmp06 , tmp08 ) );
-        auto tmpD = _mm256_sub_pd( impl::compute_temp( tmp09 , tmp03 , tmp07 , tmp10 , tmp00 , tmp04 , tmp11 , tmp06 , tmp01 ) ,
-                                   impl::compute_temp( tmp11 , tmp03 , tmp04 , tmp10 , tmp06 , tmp07 , tmp09 , tmp00 , tmp01 ) );
+        auto tmpA = _mm256_sub_pd( _impl::compute_temp( tmp00 , tmp01 , tmp02 , tmp03 , tmp04 , tmp05 , tmp06 , tmp07 , tmp08 ) ,
+                                   _impl::compute_temp( tmp06 , tmp01 , tmp05 , tmp03 , tmp07 , tmp02 , tmp00 , tmp04 , tmp08 ) );
+        auto tmpB = _mm256_sub_pd( _impl::compute_temp( tmp09 , tmp01 , tmp05 , tmp10 , tmp07 , tmp02 , tmp11 , tmp04 , tmp08 ) ,
+                                   _impl::compute_temp( tmp11 , tmp01 , tmp02 , tmp10 , tmp04 , tmp05 , tmp09 , tmp07 , tmp08 ) );
+        auto tmpC = _mm256_sub_pd( _impl::compute_temp( tmp11 , tmp03 , tmp02 , tmp10 , tmp06 , tmp05 , tmp09 , tmp00 , tmp08 ) ,
+                                   _impl::compute_temp( tmp09 , tmp03 , tmp05 , tmp10 , tmp00 , tmp02 , tmp11 , tmp06 , tmp08 ) );
+        auto tmpD = _mm256_sub_pd( _impl::compute_temp( tmp09 , tmp03 , tmp07 , tmp10 , tmp00 , tmp04 , tmp11 , tmp06 , tmp01 ) ,
+                                   _impl::compute_temp( tmp11 , tmp03 , tmp04 , tmp10 , tmp06 , tmp07 , tmp09 , tmp00 , tmp01 ) );
 
         tmpA = _mm256_permute4x64_pd( tmpA , _MM_SHUFFLE( 3 , 1 , 2 , 0 ) ); //[ A00, A01, A02, A03 ]
         tmpB = _mm256_permute4x64_pd( tmpB , _MM_SHUFFLE( 3 , 1 , 2 , 0 ) ); //[ A10, A11, A12, A13 ]
@@ -509,7 +415,7 @@ namespace vtx {
         auto tmpE = _mm256_set_pd( mat.data[ 3 ][ 0 ] , mat.data[ 2 ][ 0 ] , mat.data[ 1 ][ 0 ] , mat.data[ 0 ][ 0 ] );
         auto tmpF = _mm256_mul_pd( tmpE , tmpA );
 
-        auto det  = impl::compute_sum( tmpF );
+        auto det  = _impl::compute_sum( tmpF );
         auto scale = _mm256_set1_pd( 1.0 / det );
 
         tmpA = _mm256_mul_pd( tmpA , scale );
@@ -517,7 +423,7 @@ namespace vtx {
         tmpC = _mm256_mul_pd( tmpC , scale );
         tmpD = _mm256_mul_pd( tmpD , scale );
 
-        mat4x4f64 result;
+        matrix_template<vf64 , 4 , 4> result;
 
         _mm256_store_pd( &result.data[ 0 ][ 0 ] + 0x00 , tmpA );
         _mm256_store_pd( &result.data[ 0 ][ 0 ] + 0x04 , tmpB );
