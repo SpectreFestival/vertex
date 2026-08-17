@@ -39,21 +39,21 @@
 
 #include "vtxbasic.hpp"
 
-#include "vtxvector.hpp"     ///< vector_template<Ty , N>
-#include "vtxvector2.hpp"    ///< vector_template<Ty , 2>
-#include "vtxvector3.hpp"    ///< vector_template<Ty , 3>
-#include "vtxvector4.hpp"    ///< vector_template<Ty , 4>
+#include "vtxvector.hpp"  
+#include "vtxvector2.hpp" 
+#include "vtxvector3.hpp" 
+#include "vtxvector4.hpp" 
 
-#include "vtxmatrix.hpp"     ///< matrix_template<Ty , R , C>
-#include "vtxmatrix2x2.hpp"  ///< matrix_template<Ty , 2 , 2>
-#include "vtxmatrix2x3.hpp"  ///< matrix_template<Ty , 2 , 3>
-#include "vtxmatrix2x4.hpp"  ///< matrix_template<Ty , 2 , 4>
-#include "vtxmatrix3x2.hpp"  ///< matrix_template<Ty , 3 , 2>
-#include "vtxmatrix3x3.hpp"  ///< matrix_template<Ty , 3 , 3>
-#include "vtxmatrix3x4.hpp"  ///< matrix_template<Ty , 3 , 4>
-#include "vtxmatrix4x2.hpp"  ///< matrix_template<Ty , 4 , 2>
-#include "vtxmatrix4x3.hpp"  ///< matrix_template<Ty , 4 , 3>
-#include "vtxmatrix4x4.hpp"  ///< matrix_template<Ty , 4 , 4>
+#include "vtxmatrix.hpp"     
+#include "vtxmatrix2x2.hpp"  
+#include "vtxmatrix2x3.hpp"  
+#include "vtxmatrix2x4.hpp"  
+#include "vtxmatrix3x2.hpp"  
+#include "vtxmatrix3x3.hpp"  
+#include "vtxmatrix3x4.hpp"  
+#include "vtxmatrix4x2.hpp"  
+#include "vtxmatrix4x3.hpp"  
+#include "vtxmatrix4x4.hpp"  
 
 #include "vtxgenerator.hpp"
 #include "vtxquat.hpp"
